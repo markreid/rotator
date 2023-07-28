@@ -8,14 +8,13 @@ import Timer from './Timer.js';
 const seconds = (minutes) => minutes * 60;
 
 
-
 const App = () => {
 
   // game settings
   const numPeriods = 2;
   const periodLength = seconds(20);
   const numPlayersOn = 4;
-  const minutesPerChange = 4;
+  const secondsPerChange = seconds(4);
   
   // players
   const players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
