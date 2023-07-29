@@ -15,7 +15,7 @@ const MenuItem = ({ link, navigate }) => (
 
 const MenuDivider = ({ title }) => (
 	<li className="Menu-list-item Menu-divider">{title}</li>
-)
+);
 
 const Menu = ({ screen, setScreen }) => {
 	const [visible, setVisible] = useState(false);
@@ -26,7 +26,7 @@ const Menu = ({ screen, setScreen }) => {
 	};
 
 	return (
-		<div className={`Menu ${visible ? 'visible' : ''}`}>
+		<div className={`Menu ${visible ? "visible" : ""}`}>
 			<button
 				className="Menu-burger"
 				onClick={() => setVisible(!visible)}
@@ -39,11 +39,10 @@ const Menu = ({ screen, setScreen }) => {
 					<ul className="Menu-list">
 						<MenuDivider title="Game" />
 						<MenuItem link="Game" navigate={navigate} />
-						
-						
+
 						<MenuDivider title="Settings" />
 						<MenuItem link="Players" navigate={navigate} />
-											
+						<MenuItem link="Game Settings" navigate={navigate} />
 					</ul>
 				</>
 			)}
