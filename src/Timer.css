@@ -4,16 +4,27 @@
 }
 
 .timer-face {
-	display: block;
-	color: white;	
+	text-align: center;
+}
+
+.timer-face-clock {
+	color: white;
 	font-size: 3rem;
 	font-weight: bold;
-	margin: 0 auto;
+	text-align: center;
 	border: 1px solid var(--c3);
 	background: rgba(255, 255, 255, 0.15);
 	border-radius: 4px;
-	padding: 1rem;
+	padding: 1rem;	
+	margin: 0 0 0.5rem;
 	cursor: pointer;
+}
+
+.timer-face-periods {
+	font-size: 1rem;
+	margin: 0;
+	color: #ddd;
+	font-weight: bold;
 }
 
 .timer-buttons {
