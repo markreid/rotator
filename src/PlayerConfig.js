@@ -47,7 +47,7 @@ const PlayerConfig = () => {
 				))}
 			</ul>
 			<p className="PlayerConfig-total">Total: {pluralise(players.length, 'player')}</p>
-			<button className="PlayerConfig-clear-button" onClick={() => setPlayers([])}>Reset all players</button>
+			<button className="PlayerConfig-clear-button" onClick={() => setPlayers([])}>CLEAR ALL</button>
 		</div>
 	);
 };
