@@ -1,0 +1,30 @@
+.NumericInput {
+	display: flex;
+	font-size: 1rem;
+}
+
+.NumericInput input {
+	flex: 1;
+	font-size: inherit;
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-right: none;
+	border-left: none;
+	text-align: center;
+	font-weight: bold;
+}
+
+.NumericInput button {
+	flex: 1;
+	font-size: inherit;
+	padding: 1rem;
+	border: 1px solid #ccc;
+}
+
+.NumericInput .button-first {
+	border-radius: 3px 0 0 3px;
+}
+
+.NumericInput .button-last {
+	border-radius: 0 3px 3px 0;
+}
