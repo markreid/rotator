@@ -1,12 +1,11 @@
 import { useState } from 'react';
 
+import { leadingZero, formatClock } from './util';
+
 import './Timer.css';
 
-// add a leading zero to single digits
-export const leadingZero = (num) => num < 10 ? `0${num}` : num;
 
-// format seconds to clock
-export const format = (seconds) => `${leadingZero(Math.floor(seconds/60))}:${leadingZero(seconds%60)}`;
+
 
 const Timer = ({ clockTime, periodLength, toggleClock, resetClock, clockRunning }) => {
 
@@ -16,12 +15,12 @@ const Timer = ({ clockTime, periodLength, toggleClock, resetClock, clockRunning 
 	const toggleMode = () => setRemainingMode((mode) => !mode);
 
 	// hide the buttons by default so you don't push them by mistake
-	const [showButtons, setShowButtons] = useState(false);
+	const [showButtons, setShowButtons] = useState(true);
 
 	return (
 		<div className="timer">
 			<button onClick={toggleMode} className="timer-face">
-				{format(remainingMode ? periodLength - clockTime : clockTime)}
+				{formatClock(remainingMode ? periodLength - clockTime : clockTime)}
 			</button>
 			
 			{showButtons ? (

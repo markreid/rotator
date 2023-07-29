@@ -1,5 +1,5 @@
 .timer {
-	background: teal;
+	background: var(--c4);
 	padding: 1rem;
 }
 
@@ -9,7 +9,7 @@
 	font-size: 3rem;
 	font-weight: bold;
 	margin: 0 auto;
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: 1px solid var(--c3);
 	background: rgba(255, 255, 255, 0.15);
 	border-radius: 4px;
 	padding: 1rem;

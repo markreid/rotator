@@ -1,0 +1,64 @@
+.PlayerConfig {
+	
+}
+
+.PlayerConfig-form {
+	width: 100%;
+	margin: 0;
+	display: flex;
+	padding: 1rem;
+	font-size: 1rem;
+}
+
+.PlayerConfig-form-input {
+	flex: 1;
+	margin: 0;
+	padding: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 3px 0px 0px 3px;
+	font-size: inherit;
+}
+
+.PlayerConfig-form-button {
+	border: 1px solid #ccc;
+	border-left: none;
+	border-radius: 0px 3px 3px 0px;
+	background: var(--c2);
+	color: var(--c5);
+	font-size: inherit;
+}
+
+.PlayerConfig-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.PlayerConfig-list-item {
+	margin: 0;
+	padding: 1rem;
+	display: flex;	
+	background: var(--c2);
+	border-bottom: 1px solid var(--c3);
+}
+
+.PlayerConfig-list-item-name {
+	flex: 1;
+}
+
+.PlayerConfig-total {
+	padding: 1rem;
+	margin: 0;
+	font-weight: bold;
+}
+
+.PlayerConfig-clear-button {
+	margin: 1rem auto;
+	display: block;
+	font-size: inherit;
+	background: var(--c1);
+	color: var(--c2);
+	border: 1px solid var(--c4);
+	padding: 1rem;
+	border-radius: 3px;
+}

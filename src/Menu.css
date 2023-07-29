@@ -1,0 +1,52 @@
+.Menu {
+	height: 2rem;	
+	z-index: 1;	
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	text-align: right;
+}
+
+.Menu.visible {
+	background: white;
+	height: auto;
+	width: 100%;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+}
+
+.Menu-burger {
+	background: none;
+	border: none;
+	font-size: 2rem;
+}
+
+.Menu-list {
+	background: var(--c3);
+	text-align: right;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.Menu-list-item  {
+	border-bottom: 1px solid var(--c4);	
+	padding: 0;
+}
+
+.Menu-divider {
+	font-size: 1rem;
+	font-weight: bold;
+	padding: 1rem;
+
+}
+
+.Menu-button {
+	text-align: right;
+	width: 100%;
+	height: 100%;	
+	border: none;	
+	color: var(--c4);
+	font-size: 1rem;
+	padding: 1rem;
+}

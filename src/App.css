@@ -1,3 +1,51 @@
+/* https://coolors.co/palette/e63946-f1faee-a8dadc-457b9d-1d3557 */
+:root {
+  --c1: rgb(230, 57, 70);
+  --c2: rgb(241, 250, 238);
+  --c3: rgb(168, 218, 220);
+  --c4: rgb(69, 123, 157);
+  --c5: rgb(29, 53, 87);
+}
+
+
 .App {
-  text-align: center;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--c5);
+}
+
+.emoji-button {
+  border: none;
+  background: none;
+  padding: 0;
+  outline: none;
+}
+
+
+.page {
+
+}
+
+.page-title {
+  background: var(--c3);
+  color: var(--c5);
+  margin: 0;
+  font-size: 2rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--c4);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.PlayerLists {
+  display: flex;
+}
+
+.PlayerLists > div {
+  flex: 1;  
 }
