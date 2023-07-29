@@ -26,7 +26,9 @@ const PlayerConfig = () => {
 	}
 
 	const removePlayer = (name) => {
-		setPlayers(players.filter(player => name !== player));
+		const newPlayers = players.filter(player => name !== player);
+		setPlayers(newPlayers);
+		saveConfig('players', newPlayers);
 	}
 
 	return (

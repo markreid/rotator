@@ -43,6 +43,7 @@ const Menu = ({ screen, setScreen }) => {
 						<MenuDivider title="Settings" />
 						<MenuItem link="Players" navigate={navigate} />
 						<MenuItem link="Game Settings" navigate={navigate} />
+						<MenuItem link="Sub Settings" navigate={navigate} />
 					</ul>
 				</>
 			)}
