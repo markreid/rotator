@@ -6,7 +6,7 @@ import {
 	getConfig,
 	saveConfig,
 	minutesToSeconds,
-	calculateMinimumChanges,
+	calcMinChanges,
 	formatClock,
 } from "./util";
 
@@ -48,12 +48,8 @@ const SubConfig = () => {
 	const playerMinutesEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
 	const benchMinutesEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
 
-	// calc the minimum number of changes to do a full rotation
-	// then the user can choose to do more if they want.
-	const minChanges = calculateMinimumChanges(numPlayers, subsPerChange);
-	const minSubEvery = periodLengthSeconds / minChanges;
-	const subEvery = minSubEvery / subMultiplier;
-	const numChanges = minChanges * subMultiplier;
+	const numChanges = calcMinChanges(numPlayers, subsPerChange) * subMultiplier;
+	const subEvery = periodLengthSeconds / numChanges;
 
 	// how long a player spends on/off in total
 	const changesOnBench = Math.ceil(numPlayersOff / subsPerChange);

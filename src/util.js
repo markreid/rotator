@@ -8,19 +8,6 @@ export const niceMinutes = (seconds) => twoDP(secondsToMinutes(seconds));
 export const pluralise = (value, str, plural = null) => 
 	value === 1 ? `${value} ${str}` : `${value} ${(plural || `${str}s`)}`;
 
-// calculate the minimum number of changes required 
-// for the entire team to get a rotation.
-export const calculateMinimumChanges = (numPlayers, subsPerChange) => {
-	
-	// if subsPerChange divides cleanly into numPlayers, use that.
-	if (Number.isInteger(numPlayers/subsPerChange)) {
-		return numPlayers/subsPerChange;
-	} 
-
-	// otherwise it's just the number of players
-	return numPlayers;
-}
-
 // add a leading zero to single digits
 export const leadingZero = (num) => (num < 10 && num > -10) ? `0${num}` : num;
 // format seconds to clock
@@ -54,6 +41,16 @@ export const setSubAsMade = (subs, index) => {
 		made: sub.index !== index ? sub.made : true,
 	}));
 }
+
+
+// return the minimum number of changes required for the 
+// entire team to rotate.
+// if subsPerChange divides cleanly into numPlayers, it's that.
+// otherwise it's the number of players.
+export const calcMinChanges = (numPlayers, subsPerChange) => 
+	Number.isInteger(numPlayers/subsPerChange) ? numPlayers / subsPerChange : numPlayers;
+
+
 
 // pull data from localStorage
 export const getConfig = (key, fallback = null) => {
