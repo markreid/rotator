@@ -21,23 +21,23 @@ const Timer = ({
 	const [showButtons] = useState(true);
 
 	return (
-		<div className="timer">
-			<div className="timer-face">
-			<button onClick={toggleMode} className="timer-face-clock">
+		<div className="Timer">
+			<div className="Timer-face">
+			<button onClick={toggleMode} className="Timer-face-clock">
 				{formatClock(
 					remainingMode ? periodLength - clockTime : clockTime
 				)}				
 			</button>
-			<p className="timer-face-periods">{currentPeriod} / {numPeriods}</p>
+			<p className="Timer-face-periods">{currentPeriod} / {numPeriods}</p>
 			</div>
 
 
 			{showButtons ? (
-				<div className="timer-buttons">
-					<button className="timer-button" onClick={toggleClock}>
+				<div className="Timer-buttons">
+					<button className="Timer-button" onClick={toggleClock}>
 						{clockRunning ? "⏸" : "▶️"}
 					</button>
-					<button className="timer-button" onClick={resetClock}>
+					<button className="Timer-button" onClick={resetClock}>
 						🔁
 					</button>
 				</div>

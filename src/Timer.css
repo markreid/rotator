@@ -1,13 +1,13 @@
-.timer {
+.Timer {
 	background: var(--c4);
 	padding: 1rem;
 }
 
-.timer-face {
+.Timer-face {
 	text-align: center;
 }
 
-.timer-face-clock {
+.Timer-face-clock {
 	color: white;
 	font-size: 3rem;
 	font-weight: bold;
@@ -20,14 +20,14 @@
 	cursor: pointer;
 }
 
-.timer-face-periods {
+.Timer-face-periods {
 	font-size: 1rem;
 	margin: 0;
 	color: #ddd;
 	font-weight: bold;
 }
 
-.timer-buttons {
+.Timer-buttons {
 	margin: 1rem auto 0;
 	display: flex;
 	align-items: center;
@@ -36,7 +36,7 @@
 	column-gap: 1rem;
 }
 
-.timer-button {
+.Timer-button {
 	cursor: pointer;
 	border: none;
 	background: none;
