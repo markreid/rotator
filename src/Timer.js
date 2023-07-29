@@ -17,8 +17,8 @@ const Timer = ({
 	const [remainingMode, setRemainingMode] = useState(true);
 	const toggleMode = () => setRemainingMode((mode) => !mode);
 
-	// hide the buttons by default so you don't push them by mistake
-	const [showButtons, setShowButtons] = useState(false);
+	// we could hide the buttons by default so you don't push them by mistake
+	const [showButtons] = useState(true);
 
 	return (
 		<div className="timer">
