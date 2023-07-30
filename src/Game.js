@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import "./Game.css";
+
 import Timer from "./Timer";
 import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
@@ -75,32 +77,31 @@ const Game = () => {
 
 	const playersOnField = players.slice(0, numPlayersOn);
 	const playersOnBench = players.slice(numPlayersOn);
-	
+
 	// make a sub
 	const makeSub = (index, on, off) => {
-		const sub = subs[index];
-		
-		// remove the sub from the sub list		
-		setSubs(removeElement(subs, index));
-		
 		// sub the players
-		setPlayers([].concat(
-			players.slice(0, numPlayersOn).filter(player => player !== off),
-			on,
-			players.slice(numPlayersOn).filter(player => player !== on),
-			off,		
-		));
+		setPlayers(
+			[].concat(
+				players
+					.slice(0, numPlayersOn)
+					.filter((player) => player !== off),
+				on,
+				players.slice(numPlayersOn).filter((player) => player !== on),
+				off
+			)
+		);
 
+		// if this is a sub from the suggested list, remove it
+		if (index !== null) setSubs(removeElement(subs, index));
 
-
-		// setPlayersOnField(
-		// 	playersOnField.filter((name) => name !== off).concat([on])
-		// );
-		// setPlayersOnBench(
-		// 	playersOnBench.filter((name) => name !== on).concat([off])
-		// );
-		// setSubs(setSubAsMade(subs, index));
+		// reset selected
+		setOn(null);
+		setOff(null);
 	};
+
+	const [on, setOn] = useState(null);
+	const [off, setOff] = useState(null);
 
 	return !configReady ? null : (
 		<div className="Game">
@@ -126,20 +127,34 @@ const Game = () => {
 				}}
 			/>
 
-			<div className="PlayerLists">
+			<div className="PlayerList-titles">
+			{on && off ? (
+					<button className="PlayerList-titles-sub-button" onClick={() => makeSub(null, on, off)}>Make sub</button>
+				) : (
+					<>
+						<h2 className="PlayerList-title field">Field</h2>
+						<h2 className="PlayerList-title bench">Bench</h2>
+					</>
+				)}
+			</div>
 
-			<PlayerList
-				{...{
-					players: playersOnField,
-					title: "Field",
-				}}
-			/>
-			<PlayerList
-				{...{
-					players: playersOnBench,
-					title: "Bench",
-				}}
-			/>
+			<div className="PlayerList-container">
+				<PlayerList
+					{...{
+						players: playersOnField,
+						className: 'field',
+						selected: off,
+						select: setOff,
+					}}
+				/>
+				<PlayerList
+					{...{
+						players: playersOnBench,
+						className: 'bench',
+						selected: on,
+						select: setOn,
+					}}
+				/>
 			</div>
 		</div>
 	);

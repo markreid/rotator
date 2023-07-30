@@ -1,30 +1,76 @@
 .PlayerList {
 	text-align: left;
-	background: var(--c2);
 }
 
 .PlayerList-title {
 	font-size: 2rem;
-	margin: 1rem 0;
+	line-height: 2rem;
+	padding: 1rem;
+	margin: 0;
 	text-align: center;
-	text-transform: uppercase;
+	z-index: 1;
+	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
 .PlayerList-list {
-	padding: 0;
 	list-style: none;
 	margin: 0;
+	padding: 0;
 }
 
 .PlayerList-list-item {
-	padding: 1rem;
 	font-size: 1.4rem;
 	border-bottom: 1px solid var(--c4);
 }
 
+.PlayerList-list-item-button {
+	width: 100%;
+	padding: 1rem;
+	background: none;
+	border: none;
+	color: inherit;
+	font-size: inherit;
+}
+
+.PlayerList-container, .PlayerList-titles {
+  display: flex;
+}
+
+.PlayerList, .PlayerList-title {
+  flex: 1;  
+}
+
+.PlayerList-titles-sub-button {
+	width: 100%;
+	padding: 1rem;	
+	font-size: 1.5rem;
+	line-height: 2rem;
+	border: none;
+	background: none;
+	background: var(--c5);
+	font-weight: bold;
+	color: var(--c2);
+}
+
+.PlayerList-titles {
+	border-top: 3px solid var(--c4);
+	box-shadow: 0 5px 5px var(--c4);
+}
 
 
-.PlayerList + .PlayerList {
+.PlayerList.field .PlayerList-list-item, .PlayerList-title.field {
+	background: var(--c2);
+}
+
+.PlayerList.field .PlayerList-list-item.selected {
+	background: var(--off);
+	color: white;
+}
+
+.PlayerList.bench .PlayerList-list-item,  .PlayerList-title.bench {
 	background: var(--c3);
-	border-left: 1px solid var(--c4);
+}
+
+.PlayerList.bench .PlayerList-list-item.selected {
+	background: var(--on);
 }

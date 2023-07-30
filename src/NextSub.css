@@ -24,12 +24,12 @@
 }
 
 .Sub-on {
-	background: rgb(150, 255, 150);
+	background: var(--on);
 	padding: 1rem 2rem;
 }
 
 .Sub-off {
-	background: rgb(250, 120, 120);
+	background: var(--off);
 	color: white;
 	padding: 1rem 2rem;
 }
@@ -39,7 +39,6 @@
 	padding: 1rem 0;
 	text-align: center;
 	width: 7rem;
-/*	font-weight: bold;*/
 }
 
 .Sub-time.overdue {
@@ -51,6 +50,6 @@
 	font-size: 2rem;
 	border: none;
 	padding: 0;
-	background: linear-gradient(90deg, rgb(150, 255, 150) 0%, rgb(150, 255, 150) 50%, rgb(250, 120, 120) 50%);
+	background: linear-gradient(90deg, var(--off) 0%, var(--off) 50%, var(--on) 50%);
 
 }

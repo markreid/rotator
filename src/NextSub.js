@@ -6,11 +6,12 @@ import { formatClock, getConfig } from "./util";
 
 const Sub = ({ on, off, time, clockTime, makeSub, index }) => (
 	<div className="Sub">
-		<div className="Sub-on">{on}</div>
+		<div className="Sub-off">{off}</div>
 		<button className="Sub-button" onClick={() => makeSub(index, on, off)}>
 			🔁
 		</button>
-		<div className="Sub-off">{off}</div>
+		<div className="Sub-on">{on}</div>
+		
 
 		<div className={`Sub-time ${clockTime > time ? "overdue" : ""}`}>
 			{formatClock(time - clockTime)}

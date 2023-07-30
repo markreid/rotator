@@ -5,6 +5,9 @@
   --c3: rgb(168, 218, 220);
   --c4: rgb(69, 123, 157);
   --c5: rgb(29, 53, 87);
+
+  --off: rgb(255, 120, 120);
+  --on: rgb(140, 255, 140);
 }
 
 
@@ -40,12 +43,3 @@
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
 }
 
-
-
-.PlayerLists {
-  display: flex;
-}
-
-.PlayerLists > div {
-  flex: 1;  
-}

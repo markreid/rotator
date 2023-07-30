@@ -1,14 +1,20 @@
-import './PlayerList.css';
+import "./PlayerList.css";
 
-const PlayerList = ({ players, title }) => (
-	<div className="PlayerList">
-		<h2 className="PlayerList-title">{title}</h2>
-		<ul className="PlayerList-list">
-			{players.map((player) => (
-				<li key={player} className="PlayerList-list-item">{player}</li>
-			))}
-		</ul>
-	</div>
-);
+const PlayerList = ({ players, selected, select, className = ''}) => {
+	return (
+		<div className={`PlayerList ${className}`}>
+			<ul className="PlayerList-list">
+				{players.map((player) => {
+					const isSelected = selected === player;
+					return (
+						<li key={player} className={`PlayerList-list-item ${isSelected ? 'selected' : ''}`}>
+							<button className="PlayerList-list-item-button" onClick={() => select(isSelected ? null : player)}>{player}</button>
+						</li>
+					);
+				})}
+			</ul>
+		</div>
+	);
+};
 
 export default PlayerList;
