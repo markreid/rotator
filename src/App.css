@@ -34,12 +34,11 @@
 }
 
 .page-title {
-  background: var(--c3);
-  color: var(--c5);
+  background: var(--c5);
+  color: white;
   margin: 0;
   font-size: 2rem;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--c4);
-  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
 }
 
