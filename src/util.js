@@ -59,6 +59,9 @@ export const setSubAsMade = (subs, index) => {
 	}));
 }
 
+export const removeElement = (arr, index) => 
+	arr.slice(0, index).concat(arr.slice(index + 1))
+
 
 // return the minimum number of changes required for the 
 // entire team to rotate.

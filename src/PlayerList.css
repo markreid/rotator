@@ -1,0 +1,30 @@
+.PlayerList {
+	text-align: left;
+	background: var(--c2);
+}
+
+.PlayerList-title {
+	font-size: 2rem;
+	margin: 1rem 0;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.PlayerList-list {
+	padding: 0;
+	list-style: none;
+	margin: 0;
+}
+
+.PlayerList-list-item {
+	padding: 1rem;
+	font-size: 1.4rem;
+	border-bottom: 1px solid var(--c4);
+}
+
+
+
+.PlayerList + .PlayerList {
+	background: var(--c3);
+	border-left: 1px solid var(--c4);
+}

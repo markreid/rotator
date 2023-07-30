@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 
 import Timer from "./Timer";
 import NextSub from "./NextSub";
+import PlayerList from "./PlayerList";
 
 import {
 	minutesToSeconds,
 	calcSubTimes,
-	setSubAsMade,
+	removeElement,
 	getConfig,
 } from "./util";
 
@@ -22,25 +23,31 @@ const Game = () => {
 	const [{ subsPerChange }, setSubSettings] = useState({});
 	const [subs, setSubs] = useState([]);
 
-	useEffect(() => {
-		const savedPlayers = getConfig('players', []);
-		const savedSubSettings = getConfig('subConfig', {});
-		const savedGameSettings = getConfig('gameSettings', {});
+	useEffect(
+		() => {
+			const savedPlayers = getConfig("players", []);
+			const savedSubSettings = getConfig("subConfig", {});
+			const savedGameSettings = getConfig("gameSettings", {});
 
-		setPlayers(savedPlayers);
-		setSubSettings(savedSubSettings);
-		setGameSettings(savedGameSettings);		
+			setPlayers(savedPlayers);
+			setSubSettings(savedSubSettings);
+			setGameSettings(savedGameSettings);
 
-		const subs = calcSubTimes(savedGameSettings, savedSubSettings, savedPlayers);
-		setSubs(subs);
+			const subs = calcSubTimes(
+				savedGameSettings,
+				savedSubSettings,
+				savedPlayers
+			);
+			setSubs(subs);
+			setConfigReady(true);
 
-		setConfigReady(true);
-
-		// todo - if there are no game settings set some key to show
-		// that we're doing a fresh load
-	}, [
-		// reloadConfigKey
-	]);
+			// todo - if there are no game settings set some key to show
+			// that we're doing a fresh load
+		},
+		[
+			// reloadConfigKey
+		]
+	);
 
 	// game state
 	const currentPeriod = 1;
@@ -48,32 +55,13 @@ const Game = () => {
 	const [clockTime, setClockTime] = useState(() => 0);
 	const [clockRunning, setClockRunning] = useState(() => false);
 
-	const [playersOnField, setPlayersOnField] = useState(
-		players.slice(0, numPlayersOn)
-	);
-	const [playersOnBench, setPlayersOnBench] = useState(
-		players.slice(numPlayersOn)
-	);
-
-	// make a sub
-	const makeSub = (index, on, off) => {
-		setPlayersOnField(
-			playersOnField.filter((name) => name !== off).concat([on])
-		);
-		setPlayersOnBench(
-			playersOnBench.filter((name) => name !== on).concat([off])
-		);
-		setSubs(setSubAsMade(subs, index));
-	};
-
-
-
-
 	// if the clock's running, tick it up once a second
 	useEffect(() => {
 		if (!clockRunning) return;
 		const clockTick = () =>
-			setClockTime((previous) => Math.min(periodLengthSeconds, previous + 1));
+			setClockTime((previous) =>
+				Math.min(periodLengthSeconds, previous + 1)
+			);
 		const timer = setInterval(clockTick, 1000);
 		return () => clearInterval(timer);
 	}, [clockRunning, periodLengthSeconds]);
@@ -83,6 +71,35 @@ const Game = () => {
 	const resetClock = () => {
 		setClockTime(0);
 		setClockRunning(false);
+	};
+
+	const playersOnField = players.slice(0, numPlayersOn);
+	const playersOnBench = players.slice(numPlayersOn);
+	
+	// make a sub
+	const makeSub = (index, on, off) => {
+		const sub = subs[index];
+		
+		// remove the sub from the sub list		
+		setSubs(removeElement(subs, index));
+		
+		// sub the players
+		setPlayers([].concat(
+			players.slice(0, numPlayersOn).filter(player => player !== off),
+			on,
+			players.slice(numPlayersOn).filter(player => player !== on),
+			off,		
+		));
+
+
+
+		// setPlayersOnField(
+		// 	playersOnField.filter((name) => name !== off).concat([on])
+		// );
+		// setPlayersOnBench(
+		// 	playersOnBench.filter((name) => name !== on).concat([off])
+		// );
+		// setSubs(setSubAsMade(subs, index));
 	};
 
 	return !configReady ? null : (
@@ -105,8 +122,25 @@ const Game = () => {
 					subsPerChange,
 					players,
 					clockTime,
+					makeSub,
 				}}
 			/>
+
+			<div className="PlayerLists">
+
+			<PlayerList
+				{...{
+					players: playersOnField,
+					title: "Field",
+				}}
+			/>
+			<PlayerList
+				{...{
+					players: playersOnBench,
+					title: "Bench",
+				}}
+			/>
+			</div>
 		</div>
 	);
 };
