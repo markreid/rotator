@@ -2,12 +2,22 @@
 	
 }
 
+.NextSub-showmore {
+	width: auto;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.25rem;
+    background: none;
+    border: none;
+    padding: 1rem;
+    display: block;
+}
+
 
 .Sub {
 	font-size: 1.5rem;
 	display: flex;	
-	border-bottom: 3px solid var(--c5);
-
+	border-bottom: 1px solid var(--c4);
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 33% 2rem 33%;

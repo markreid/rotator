@@ -26,15 +26,13 @@ const NextSub = ({
 	subs,
 	makeSub,
 }) => {
-	const [showMore, setShowMore] = useState(false);
-	const numSubsVisible = showMore ? subs.length : subsPerChange;
-
+	const [subsVisible, setSubsVisible] = useState(subsPerChange);
+	
 	const { numPlayersOn } = getConfig("gameSettings", {});
 
 	const subsWithPlayers = subs.map((time, i) => {
 		const off = players[i % players.length];
 		const on = players[(i + numPlayersOn) % players.length];
-
 		return {
 			time,
 			off,
@@ -44,20 +42,23 @@ const NextSub = ({
 
 	return (
 		<div className="NextSub">
-			{subsWithPlayers.slice(0, numSubsVisible).map((sub, i) => (
+			{subsWithPlayers.slice(0, subsVisible).map((sub, i) => (
 				<Sub
 					key={`${sub.on}${sub.time}`}
 					{...sub}
 					index={i}
 					clockTime={clockTime}
-					makeSub={makeSub}
+					makeSub={(...args) => {
+						makeSub(...args);
+						setSubsVisible(subsVisible <= 1 ? subsPerChange :subsVisible - 1);
+					}}
 				/>
 			))}
 			<button
 				className="NextSub-showmore"
-				onClick={() => setShowMore(!showMore)}
+				onClick={() => setSubsVisible(subsVisible + subsPerChange)}
 			>
-				Show {showMore ? "less" : "more"}
+				Show next
 			</button>
 		</div>
 	);
