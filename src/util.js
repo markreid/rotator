@@ -20,7 +20,7 @@ export const formatClock = (seconds) => {
 
 // calculate our sub array
 export const calcSubs = (players, numPlayersOn, subEvery, numChanges, subsPerChange) => {
-	return new Array(numChanges - 1).fill().map((x, changeIndex) => {
+	return new Array(numChanges).fill().map((x, changeIndex) => {
     return new Array(Number(subsPerChange)).fill().map((y, subIndex) => {
       const index = (changeIndex * subsPerChange) + subIndex;      
       return ({
@@ -35,6 +35,23 @@ export const calcSubs = (players, numPlayersOn, subEvery, numChanges, subsPerCha
   }).flat();
 }
 
+
+// calculate the sub times for a game
+export const calcSubTimes = (gameSettings, subSettings, players) => {	
+	const { subsPerChange, subMultiplier } = subSettings;
+	const { periodLengthMinutes, numPlayersOn } = gameSettings;
+	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
+	const numChanges = calcChanges(numPlayersOn, players.length, subsPerChange, subMultiplier);
+	const subEvery = Math.ceil(periodLengthSeconds / (numChanges + 1));
+
+	return new Array(numChanges * subsPerChange).fill().map((x, i) => {
+		const changeIndex = Math.floor((i + subsPerChange) / subsPerChange);
+		const time = changeIndex * subEvery;
+		return time;
+	});
+
+}
+
 // return a sub array with made:true at the specified index
 export const setSubAsMade = (subs, index) => {
 	return subs.map((sub, i) => Object.assign({}, sub, {
@@ -45,11 +62,20 @@ export const setSubAsMade = (subs, index) => {
 
 // return the minimum number of changes required for the 
 // entire team to rotate.
-// if subsPerChange divides cleanly into numPlayers, it's that.
-// otherwise it's the number of players.
-export const calcMinChanges = (numPlayers, subsPerChange) => 
-	Number.isInteger(numPlayers/subsPerChange) ? numPlayers / subsPerChange : numPlayers;
+// -1 because the starting lineup isn't considered a change
+export const calcMinChanges = (numPlayersOn, numPlayers, subsPerChange) => {
+	// if there's no bench, no changes
+	if (numPlayersOn >= numPlayers) return 0;
 
+	// if number of players divides evenly into subsPerChange, it's that
+	if (Number.isInteger(numPlayers/subsPerChange)) {
+		return (numPlayers / subsPerChange) - 1;
+	} 
+
+	return numPlayers - 1;
+}
+
+export const calcChanges = (numPlayersOn, numPlayers, subsPerChange, subMultiplier) => calcMinChanges(numPlayersOn, numPlayers, subsPerChange) * subMultiplier;
 
 
 // pull data from localStorage

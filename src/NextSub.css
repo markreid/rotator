@@ -1,0 +1,42 @@
+.NextSub {
+	
+}
+
+
+.Sub {
+	font-size: 1.5rem;
+	display: flex;	
+	border-bottom: 3px solid var(--c5);
+}
+
+.Sub > div {
+	padding: 1rem;
+	flex: 1;
+}
+
+.Sub-on {
+	background: rgb(150, 255, 150);
+	flex: 3;
+}
+
+.Sub-off {
+	background: rgb(250, 120, 120);
+	color: white;
+	flex: 3;
+}
+
+.Sub-time {
+	flex: 2;
+}
+
+.Sub-time.overdue {
+	background: var(--c5);
+	color: white;
+}
+
+.Sub-button {
+	font-size: 2rem;
+	background: none;
+	border: none;
+	padding: 0;
+}

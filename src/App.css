@@ -10,7 +10,7 @@
 
 .App {
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
   margin: 0;
   padding: 0;
   display: flex;
@@ -35,7 +35,7 @@
   color: var(--c5);
   margin: 0;
   font-size: 2rem;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid var(--c4);
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
 }

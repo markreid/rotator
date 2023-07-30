@@ -6,7 +6,7 @@ import {
 	getConfig,
 	saveConfig,
 	minutesToSeconds,
-	calcMinChanges,
+	calcChanges,
 	formatClock,
 } from "./util";
 
@@ -48,8 +48,8 @@ const SubConfig = () => {
 	const playerMinutesEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
 	const benchMinutesEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
 
-	const numChanges = calcMinChanges(numPlayers, subsPerChange) * subMultiplier;
-	const subEvery = periodLengthSeconds / numChanges;
+	const numChanges = calcChanges(numPlayersOn, numPlayers, subsPerChange, subMultiplier);
+	const subEvery = periodLengthSeconds / (numChanges + 1);
 
 	// how long a player spends on/off in total
 	const changesOnBench = Math.ceil(numPlayersOff / subsPerChange);
@@ -69,7 +69,7 @@ const SubConfig = () => {
 		<div className="SubConfig page">
 			<div className="page-title">Subs Settings</div>
 
-			{ready && (
+			{ready && numChanges !== 0 && (
 				<>
 					<ul className="GameConfig-list">
 						<li className="GameConfig-list-item">
@@ -129,6 +129,13 @@ const SubConfig = () => {
 					</div>
 				</>
 			)}
+
+			{ready && numChanges === 0 && (<>
+				<p className="GameConfig-summary">You don't have enough players to make subs.</p>
+				<p className="GameConfig-summary">You may need to update your players or change the game settings.</p>
+			</>)}
+
+			
 		</div>
 	);
 };

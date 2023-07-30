@@ -5,7 +5,7 @@ import { formatClock } from "./util";
 
 const Timer = ({
 	clockTime,
-	periodLength,
+	periodLengthSeconds,
 	toggleClock,
 	resetClock,
 	clockRunning,
@@ -25,7 +25,7 @@ const Timer = ({
 			<div className="Timer-face">
 			<button onClick={toggleMode} className="Timer-face-clock">
 				{formatClock(
-					remainingMode ? periodLength - clockTime : clockTime
+					remainingMode ? periodLengthSeconds - clockTime : clockTime
 				)}				
 			</button>
 			<p className="Timer-face-periods">{currentPeriod} / {numPeriods}</p>
