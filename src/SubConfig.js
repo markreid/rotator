@@ -13,7 +13,7 @@ import {
 import NumericInput from "./NumericInput";
 
 const DEFAULT_SETTINGS = {
-	subsPerChange: 1,
+	playersPerSub: 1,
 	subMultiplier: 1,
 };
 
@@ -23,8 +23,8 @@ const SubConfig = () => {
 
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
 
-	const [subsPerChange, setSubsPerChange] = useState(
-		DEFAULT_SETTINGS.subsPerChange
+	const [playersPerSub, setPlayersPerSub] = useState(
+		DEFAULT_SETTINGS.playersPerSub
 	);
 	const [subMultiplier, setSubMultiplier] = useState(
 		DEFAULT_SETTINGS.subMultiplier
@@ -36,7 +36,7 @@ const SubConfig = () => {
 
 	useEffect(() => {
 		const subSettings = getConfig("subConfig", { ...DEFAULT_SETTINGS });
-		setSubsPerChange(subSettings.subsPerChange);
+		setPlayersPerSub(subSettings.playersPerSub);
 		setSubMultiplier(subSettings.subMultiplier);
 		setReady(true);
 	}, [effectTrigger]);
@@ -48,18 +48,18 @@ const SubConfig = () => {
 	const playerMinutesEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
 	const benchMinutesEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
 
-	const numChanges = calcChanges(numPlayersOn, numPlayers, subsPerChange, subMultiplier);
+	const numChanges = calcChanges(numPlayersOn, numPlayers, playersPerSub, subMultiplier);
 	const subEvery = periodLengthSeconds / (numChanges + 1);
 
 	// how long a player spends on/off in total
-	const changesOnBench = Math.ceil(numPlayersOff / subsPerChange);
+	const changesOnBench = Math.ceil(numPlayersOff / playersPerSub);
 	const timeOnBench = changesOnBench * subEvery;
-	const changesOnField = Math.ceil(numPlayersOn / subsPerChange);
+	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
 	const timeOnField = changesOnField * subEvery;
 
 	const saveToConfig = () => {
 		saveConfig("subConfig", {
-			subsPerChange,
+			playersPerSub,
 			subMultiplier,
 		});
 		resetFromSaved();
@@ -77,8 +77,8 @@ const SubConfig = () => {
 							<NumericInput
 								min={1}
 								max={Math.max(numPlayers - numPlayersOn, 1)}
-								value={subsPerChange}
-								onChange={setSubsPerChange}
+								value={playersPerSub}
+								onChange={setPlayersPerSub}
 							/>
 						</li>
 
@@ -97,7 +97,7 @@ const SubConfig = () => {
 					</ul>
 
 					<p className="GameConfig-summary">
-						<b>{pluralise(subsPerChange, "player")}</b> every{" "}
+						<b>{pluralise(playersPerSub, "player")}</b> every{" "}
 						<b>{formatClock(subEvery)}</b> (<b>{pluralise(numChanges, 'sub')}</b> per
 						period.)
 					</p>

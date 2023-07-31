@@ -19,8 +19,6 @@ const DEFAULT_SETTINGS = {
 const PERIOD_NAMES = ["periods", "period", "halves", "thirds", "quarters"];
 
 const GameConfig = ({
-	subsPerChange,
-	setSubsPerChange,
 	subMultiplier,
 	setSubMultiplier,
 }) => {
