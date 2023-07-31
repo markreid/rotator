@@ -1,0 +1,21 @@
+.Sub-Button {
+  width: 100%;
+}
+
+.Sub-Button-button {
+  display: block;
+  margin: 0 auto;
+  font-size: 1.25rem;
+  padding: 1rem;
+  color: white;
+  background: var(--c4);
+  border: none;
+}
+
+.Sub-Button-button.makesub {
+  background: var(--c1);
+}
+
+.Sub-Button-button.autosub {
+  background: var(--c4);
+}

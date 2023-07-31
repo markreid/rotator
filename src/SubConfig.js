@@ -76,7 +76,7 @@ const SubConfig = () => {
 							<h3>Subs per change:</h3>
 							<NumericInput
 								min={1}
-								max={numPlayers}
+								max={Math.max(numPlayers - numPlayersOn, 1)}
 								value={subsPerChange}
 								onChange={setSubsPerChange}
 							/>

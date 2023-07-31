@@ -1,6 +1,48 @@
 .NextSub {
-	
+	padding: 0.5rem;
+	background: var(--c5);
+	color: white;
 }
+
+.NextSub-title {
+	margin: 0;
+	font-size: 1rem;
+	text-align: center;
+	font-weight: normal;
+}
+
+.NextSub-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.NextSub-list .Sub-time:nth-child(1) {
+	color: white;
+}
+
+
+.NextSub-list .Sub-time {
+	color: #bbb;
+}
+
+.NextSub .Sub-time.overdue {
+	color: var(--c1);
+}
+
+.NextSub .Sub-time button {
+	background: none;
+	display: block;
+	color: inherit;
+	border: none;
+	margin: 0 auto;
+	font-family: monospace;
+	padding: 0.5rem;
+	text-align: center;
+	font-size: 2rem;
+	font-weight: bold;
+}
+
 
 .NextSub-showmore {
 	width: auto;
@@ -32,18 +74,6 @@
 	background: var(--off);
 	color: white;
 	padding: 1rem 2rem;
-}
-
-.Sub-time {
-	font-family: monospace;
-	padding: 1rem 0;
-	text-align: center;
-	width: 7rem;
-}
-
-.Sub-time.overdue {
-	background: var(--c5);
-	color: white;
 }
 
 .Sub-button {

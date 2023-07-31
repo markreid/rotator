@@ -93,6 +93,8 @@ const Game = () => {
 		);
 
 		// if this is a sub from the suggested list, remove it
+		// this needs to be changed, it never happens
+		
 		if (index !== null) setSubs(removeElement(subs, index));
 
 		// reset selected
@@ -102,6 +104,12 @@ const Game = () => {
 
 	const [on, setOn] = useState(null);
 	const [off, setOff] = useState(null);
+
+	const autoSub = () => {
+		setOff(players[0]);
+		setOn(players[numPlayersOn])
+	}
+
 
 	return !configReady ? null : (
 		<div className="Game">
@@ -119,7 +127,7 @@ const Game = () => {
 
 			<NextSub
 				{...{
-					subs,
+					subTimes: subs,
 					subsPerChange,
 					players,
 					clockTime,
@@ -127,15 +135,18 @@ const Game = () => {
 				}}
 			/>
 
-			<div className="PlayerList-titles">
-			{on && off ? (
-					<button className="PlayerList-titles-sub-button" onClick={() => makeSub(null, on, off)}>Make sub</button>
+
+			<div className="Sub-Button">
+				{!on && !off ? (
+					<button className="Sub-Button-button autosub" onClick={autoSub}>Auto Sub</button>
 				) : (
-					<>
-						<h2 className="PlayerList-title field">Field</h2>
-						<h2 className="PlayerList-title bench">Bench</h2>
-					</>
-				)}
+					<button className="Sub-Button-button makesub" onClick={() => makeSub(null, on, off)}>Make Sub</button>
+				)}		
+			</div>
+
+			<div className="PlayerList-titles">			
+				<h2 className="PlayerList-title field">Field</h2>
+				<h2 className="PlayerList-title bench">Bench</h2>
 			</div>
 
 			<div className="PlayerList-container">
