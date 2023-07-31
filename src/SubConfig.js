@@ -73,7 +73,7 @@ const SubConfig = () => {
 				<>
 					<ul className="GameConfig-list">
 						<li className="GameConfig-list-item">
-							<h3>Subs per change:</h3>
+							<h3>Players changed each sub:</h3>
 							<NumericInput
 								min={1}
 								max={Math.max(numPlayers - numPlayersOn, 1)}
@@ -97,8 +97,8 @@ const SubConfig = () => {
 					</ul>
 
 					<p className="GameConfig-summary">
-						<b>{pluralise(subsPerChange, "sub")}</b> every{" "}
-						<b>{formatClock(subEvery)}</b> (<b>{numChanges}</b> per
+						<b>{pluralise(subsPerChange, "player")}</b> every{" "}
+						<b>{formatClock(subEvery)}</b> (<b>{pluralise(numChanges, 'sub')}</b> per
 						period.)
 					</p>
 

@@ -18,24 +18,6 @@ export const formatClock = (seconds) => {
 	return `${seconds < 0 ? '-' : ''}${leadingZero(Math.floor(Math.abs(seconds)/60))}:${leadingZero(Math.floor(Math.abs(seconds)%60))}`;
 };
 
-// calculate our sub array
-export const calcSubs = (players, numPlayersOn, subEvery, numChanges, subsPerChange) => {
-	return new Array(numChanges).fill().map((x, changeIndex) => {
-    return new Array(Number(subsPerChange)).fill().map((y, subIndex) => {
-      const index = (changeIndex * subsPerChange) + subIndex;      
-      return ({
-      	index,
-        on: players[(index + numPlayersOn) % players.length],
-        off: players[index % players.length], 
-        time: Math.floor((changeIndex + 1) * subEvery),
-        made: false,
-      })
-    });
-
-  }).flat();
-}
-
-
 // calculate the sub times for a game
 export const calcSubTimes = (gameSettings, subSettings, players) => {	
 	const { subsPerChange, subMultiplier } = subSettings;
@@ -44,19 +26,12 @@ export const calcSubTimes = (gameSettings, subSettings, players) => {
 	const numChanges = calcChanges(numPlayersOn, players.length, subsPerChange, subMultiplier);
 	const subEvery = Math.ceil(periodLengthSeconds / (numChanges + 1));
 
-	return new Array(numChanges * subsPerChange).fill().map((x, i) => {
-		const changeIndex = Math.floor((i + subsPerChange) / subsPerChange);
-		const time = changeIndex * subEvery;
+	return new Array(numChanges).fill().map((x, i) => {
+		const changeNumber = i + 1;
+		const time = changeNumber * subEvery;
 		return time;
 	});
 
-}
-
-// return a sub array with made:true at the specified index
-export const setSubAsMade = (subs, index) => {
-	return subs.map((sub, i) => Object.assign({}, sub, {
-		made: sub.index !== index ? sub.made : true,
-	}));
 }
 
 export const removeElement = (arr, index) => 

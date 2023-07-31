@@ -23,7 +23,7 @@ const Game = () => {
 
 	const [players, setPlayers] = useState([]);
 	const [{ subsPerChange }, setSubSettings] = useState({});
-	const [subs, setSubs] = useState([]);
+	const [subTimes, setSubTimes] = useState([]);
 
 	useEffect(
 		() => {
@@ -35,12 +35,11 @@ const Game = () => {
 			setSubSettings(savedSubSettings);
 			setGameSettings(savedGameSettings);
 
-			const subs = calcSubTimes(
+			setSubTimes(calcSubTimes(
 				savedGameSettings,
 				savedSubSettings,
 				savedPlayers
-			);
-			setSubs(subs);
+			));
 			setConfigReady(true);
 
 			// todo - if there are no game settings set some key to show
@@ -79,7 +78,7 @@ const Game = () => {
 	const playersOnBench = players.slice(numPlayersOn);
 
 	// make a sub
-	const makeSub = (index, on, off) => {
+	const makeSub = (on, off) => {
 		// sub the players
 		setPlayers(
 			[].concat(
@@ -91,11 +90,6 @@ const Game = () => {
 				off
 			)
 		);
-
-		// if this is a sub from the suggested list, remove it
-		// this needs to be changed, it never happens
-		
-		if (index !== null) setSubs(removeElement(subs, index));
 
 		// reset selected
 		setOn(null);
@@ -127,11 +121,8 @@ const Game = () => {
 
 			<NextSub
 				{...{
-					subTimes: subs,
-					subsPerChange,
-					players,
+					subTimes,
 					clockTime,
-					makeSub,
 				}}
 			/>
 
@@ -140,7 +131,7 @@ const Game = () => {
 				{!on && !off ? (
 					<button className="Sub-Button-button autosub" onClick={autoSub}>Auto Sub</button>
 				) : (
-					<button className="Sub-Button-button makesub" onClick={() => makeSub(null, on, off)}>Make Sub</button>
+					<button className="Sub-Button-button makesub" onClick={() => makeSub(on, off)}>Make Sub</button>
 				)}		
 			</div>
 
