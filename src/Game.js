@@ -10,22 +10,28 @@ import {
 	minutesToSeconds,
 	calcSubTimes,
 	getConfig,
+	saveConfig,
+	calcClockSeconds,
 } from "./util";
+
+const CLOCK_DEFAULTS = {
+	clockRunning: false,
+	clockStartedAt: null,
+	secondsAtStart: 0,
+};
 
 const Game = () => {
 	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameSettings] =
 		useState({});
 
 	const [configReady, setConfigReady] = useState(false);
-	// const [reloadConfigKey, reloadConfigTrigger] = useState(Math.random());
-	// const reloadConfig = () => reloadConfigTrigger(Math.random());
-
 	const [players, setPlayers] = useState([]);
 	const [{ playersPerSub }, setSubSettings] = useState({});
 	const [subTimes, setSubTimes] = useState([]);
 
 	useEffect(
 		() => {
+			// none of this is async, it could just happen directly above?
 			const savedPlayers = getConfig("players", []);
 			const savedSubSettings = getConfig("subConfig", {});
 			const savedGameSettings = getConfig("gameSettings", {});
@@ -34,11 +40,9 @@ const Game = () => {
 			setSubSettings(savedSubSettings);
 			setGameSettings(savedGameSettings);
 
-			setSubTimes(calcSubTimes(
-				savedGameSettings,
-				savedSubSettings,
-				savedPlayers
-			));
+			setSubTimes(
+				calcSubTimes(savedGameSettings, savedSubSettings, savedPlayers)
+			);
 			setConfigReady(true);
 
 			// todo - if there are no game settings set some key to show
@@ -52,25 +56,59 @@ const Game = () => {
 	// game state
 	const currentPeriod = 1;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
-	const [clockTime, setClockTime] = useState(() => 0);
-	const [clockRunning, setClockRunning] = useState(() => false);
 
-	// if the clock's running, tick it up once a second
+	const [clock, setClock] = useState(getConfig("clock", CLOCK_DEFAULTS));
+	const [clockTime, setClockTime] = useState(
+		calcClockSeconds(getConfig("clock", CLOCK_DEFAULTS))
+	);
+
+	// update our game clock every second while the clock is running.
+	// tick tock.
 	useEffect(() => {
-		if (!clockRunning) return;
-		const clockTick = () =>
-			setClockTime((previous) =>
-				Math.min(periodLengthSeconds, previous + 1)
-			);
-		const timer = setInterval(clockTick, 1000);
+		if (!clock.clockRunning) return;
+
+		const timer = setInterval(() => {
+			setClockTime(calcClockSeconds(clock));
+		}, 1000);
 		return () => clearInterval(timer);
-	}, [clockRunning, periodLengthSeconds]);
+	}, [clock]);
+
+	const startClock = () => {
+		setClock(true);
+		const oldClock = getConfig("clock");
+		const newClock = {
+			...oldClock,
+			clockRunning: true,
+			clockStartedAt: Date.now(),
+		};
+		saveConfig("clock", newClock);
+		setClock(newClock);
+	};
+
+	const stopClock = () => {
+		const newClock = {
+			clockRunning: false,
+			clockStartedAt: null,
+			secondsAtStart: clockTime,
+		};
+		saveConfig("clock", newClock);
+		setClock(newClock);
+	};
 
 	// helpers
-	const toggleClock = () => setClockRunning(!clockRunning);
+	const toggleClock = () => {
+		return clock.clockRunning ? stopClock() : startClock();
+	};
+
 	const resetClock = () => {
 		setClockTime(0);
-		setClockRunning(false);
+		const newClock = {
+			clockRunning: false,
+			clockStartedAt: null,
+			secondsAtStart: 0,
+		};
+		saveConfig("clock", newClock);
+		setClock(newClock);
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
@@ -83,13 +121,13 @@ const Game = () => {
 	const autoSub = () => {
 		setOff(players.slice(0, playersPerSub));
 		setOn(players.slice(numPlayersOn, numPlayersOn + playersPerSub));
-	}
+	};
 
 	// add or remove a player from the on/off list
 	const select = (getter, setter) => (player) => {
-		// removing 
+		// removing
 		if (getter.includes(player)) {
-			return setter(getter.filter(p => p !== player));
+			return setter(getter.filter((p) => p !== player));
 		}
 		// adding
 		if (getter.length >= players.length - numPlayersOn) {
@@ -97,7 +135,7 @@ const Game = () => {
 		}
 
 		return setter(getter.concat([player]));
-	}
+	};
 
 	// make a sub
 	const makeSub = () => {
@@ -110,7 +148,9 @@ const Game = () => {
 					.slice(0, numPlayersOn)
 					.filter((player) => !off.includes(player)),
 				on,
-				players.slice(numPlayersOn).filter((player) => !on.includes(player)),
+				players
+					.slice(numPlayersOn)
+					.filter((player) => !on.includes(player)),
 				off
 			)
 		);
@@ -128,7 +168,7 @@ const Game = () => {
 					currentPeriod,
 					numPeriods,
 					periodLengthSeconds,
-					clockRunning,
+					clockRunning: clock.clockRunning,
 					toggleClock,
 					resetClock,
 				}}
@@ -141,16 +181,26 @@ const Game = () => {
 				}}
 			/>
 
-
 			<div className="Sub-Button">
 				{!on.length && !off.length ? (
-					<button className="Sub-Button-button autosub" onClick={autoSub}>Auto Sub</button>
+					<button
+						className="Sub-Button-button autosub"
+						onClick={autoSub}
+					>
+						Auto Sub
+					</button>
 				) : (
-					<button className="Sub-Button-button makesub" disabled={on.length !== off.length} onClick={makeSub}>Make Sub</button>
-				)}		
+					<button
+						className="Sub-Button-button makesub"
+						disabled={on.length !== off.length}
+						onClick={makeSub}
+					>
+						Make Sub
+					</button>
+				)}
 			</div>
 
-			<div className="PlayerList-titles">			
+			<div className="PlayerList-titles">
 				<h2 className="PlayerList-title field">Field</h2>
 				<h2 className="PlayerList-title bench">Bench</h2>
 			</div>
@@ -159,7 +209,7 @@ const Game = () => {
 				<PlayerList
 					{...{
 						players: playersOnField,
-						className: 'field',
+						className: "field",
 						selected: off,
 						select: select(off, setOff),
 					}}
@@ -167,7 +217,7 @@ const Game = () => {
 				<PlayerList
 					{...{
 						players: playersOnBench,
-						className: 'bench',
+						className: "bench",
 						selected: on,
 						select: select(on, setOn),
 					}}

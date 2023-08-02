@@ -65,3 +65,13 @@ export const getConfig = (key, fallback = null) => {
 export const saveConfig = (key, value) => {
 	return localStorage.setItem(`rotator.${key}`, JSON.stringify(value));
 }
+
+// number of seconds since a date
+export const secondsSince = (date) => Math.round((Date.now() - new Date(date)) / 1000);
+
+
+// calculate how many seconds are on the clock
+export const calcClockSeconds = (clock) => {
+	const secondsAgo = clock.clockStartedAt ? secondsSince(clock.clockStartedAt) : 0;
+	return secondsAgo + clock.secondsAtStart;
+}
