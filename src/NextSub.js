@@ -16,6 +16,7 @@ const NextSub = ({
 			<ul className="NextSub-list">
 				{subTimes.slice(0, showMore ? 3 : 1).map((time) => (
 					<li
+						key={time}
 						className={`Sub-time ${
 							clockTime > time ? "overdue" : ""
 						}`}

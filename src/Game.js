@@ -79,9 +79,10 @@ const Game = () => {
 	const [on, setOn] = useState([]);
 	const [off, setOff] = useState([]);
 
+	// automatically select players for the next sub.
 	const autoSub = () => {
-		setOff([players[0]]);
-		setOn([players[numPlayersOn]])
+		setOff(players.slice(0, playersPerSub));
+		setOn(players.slice(numPlayersOn, numPlayersOn + playersPerSub));
 	}
 
 	// add or remove a player from the on/off list
