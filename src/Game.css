@@ -16,6 +16,10 @@
   background: var(--c1);
 }
 
+.Sub-Button-button.makesub[disabled] {
+  opacity: 0.4;
+}
+
 .Sub-Button-button.autosub {
   background: var(--c4);
 }

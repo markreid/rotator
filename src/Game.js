@@ -9,7 +9,6 @@ import PlayerList from "./PlayerList";
 import {
 	minutesToSeconds,
 	calcSubTimes,
-	removeElement,
 	getConfig,
 } from "./util";
 
@@ -22,7 +21,7 @@ const Game = () => {
 	// const reloadConfig = () => reloadConfigTrigger(Math.random());
 
 	const [players, setPlayers] = useState([]);
-	const [{ subsPerChange }, setSubSettings] = useState({});
+	const [{ playersPerSub }, setSubSettings] = useState({});
 	const [subTimes, setSubTimes] = useState([]);
 
 	useEffect(
@@ -77,33 +76,48 @@ const Game = () => {
 	const playersOnField = players.slice(0, numPlayersOn);
 	const playersOnBench = players.slice(numPlayersOn);
 
+	const [on, setOn] = useState([]);
+	const [off, setOff] = useState([]);
+
+	const autoSub = () => {
+		setOff([players[0]]);
+		setOn([players[numPlayersOn]])
+	}
+
+	// add or remove a player from the on/off list
+	const select = (getter, setter) => (player) => {
+		// removing 
+		if (getter.includes(player)) {
+			return setter(getter.filter(p => p !== player));
+		}
+		// adding
+		if (getter.length >= players.length - numPlayersOn) {
+			return;
+		}
+
+		return setter(getter.concat([player]));
+	}
+
 	// make a sub
-	const makeSub = (on, off) => {
+	const makeSub = () => {
+		if (on.length !== off.length) return;
+
 		// sub the players
 		setPlayers(
 			[].concat(
 				players
 					.slice(0, numPlayersOn)
-					.filter((player) => player !== off),
+					.filter((player) => !off.includes(player)),
 				on,
-				players.slice(numPlayersOn).filter((player) => player !== on),
+				players.slice(numPlayersOn).filter((player) => !on.includes(player)),
 				off
 			)
 		);
 
 		// reset selected
-		setOn(null);
-		setOff(null);
+		setOn([]);
+		setOff([]);
 	};
-
-	const [on, setOn] = useState(null);
-	const [off, setOff] = useState(null);
-
-	const autoSub = () => {
-		setOff(players[0]);
-		setOn(players[numPlayersOn])
-	}
-
 
 	return !configReady ? null : (
 		<div className="Game">
@@ -128,10 +142,10 @@ const Game = () => {
 
 
 			<div className="Sub-Button">
-				{!on && !off ? (
+				{!on.length && !off.length ? (
 					<button className="Sub-Button-button autosub" onClick={autoSub}>Auto Sub</button>
 				) : (
-					<button className="Sub-Button-button makesub" onClick={() => makeSub(on, off)}>Make Sub</button>
+					<button className="Sub-Button-button makesub" disabled={on.length !== off.length} onClick={makeSub}>Make Sub</button>
 				)}		
 			</div>
 
@@ -146,7 +160,7 @@ const Game = () => {
 						players: playersOnField,
 						className: 'field',
 						selected: off,
-						select: setOff,
+						select: select(off, setOff),
 					}}
 				/>
 				<PlayerList
@@ -154,7 +168,7 @@ const Game = () => {
 						players: playersOnBench,
 						className: 'bench',
 						selected: on,
-						select: setOn,
+						select: select(on, setOn),
 					}}
 				/>
 			</div>
