@@ -42,3 +42,40 @@
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
 }
 
+
+.BigButtons {
+  padding: 1rem;
+  width: 100%;
+}
+
+.BigButtons-button {
+  display: block;
+  font-size: 1.25rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: var(--c3);
+}
+
+.BigButtons-button[disabled], .BigButtons-button[disabled]:active {
+  opacity: 0.6;
+}
+
+.BigButtons-button:active {
+  opacity: 0.8;
+}
+
+.BigButtons-button + .BigButtons-button {
+  margin: 1rem auto 0;
+}
+
+.BigButtons-button.dangerous {
+  background: var(--c1);
+  color: white;
+}
+
+.BigButtons-button.alt {
+  background: var(--c2);
+}
+

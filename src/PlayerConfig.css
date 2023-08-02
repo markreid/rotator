@@ -40,6 +40,7 @@
 	display: flex;	
 	background: var(--c2);
 	border-bottom: 1px solid var(--c3);
+	font-size: 1.25rem;
 }
 
 .PlayerConfig-list-item-name {
@@ -50,15 +51,4 @@
 	padding: 1rem;
 	margin: 0;
 	font-weight: bold;
-}
-
-.PlayerConfig-clear-button {
-	margin: 1rem auto;
-	display: block;
-	font-size: inherit;
-	background: var(--c1);
-	color: var(--c2);
-	border: 1px solid var(--c4);
-	padding: 1rem;
-	border-radius: 3px;
 }

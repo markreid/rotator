@@ -25,22 +25,3 @@
 	font-size: 1.5rem;
 }
 
-.GameConfig-buttons {
-	padding: 1rem;
-	width: 100%;
-}
-
-.GameConfig-buttons-button {
-	display: block;
-	font-size: inherit;
-	width: 100%;
-	padding: 1rem;
-	border-radius: 4px;
-	border: 1px solid #ccc;
-}
-
-.GameConfig-buttons-button + .GameConfig-buttons-button {
-	margin: 1rem auto 0;
-	background: var(--c1);
-	color: white;
-}

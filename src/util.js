@@ -75,3 +75,14 @@ export const calcClockSeconds = (clock) => {
 	const secondsAgo = clock.clockStartedAt ? secondsSince(clock.clockStartedAt) : 0;
 	return secondsAgo + clock.secondsAtStart;
 }
+
+// fisher yates shuffle
+// https://javascript.info/task/shuffle
+export const shuffle = (source) => {
+	const arr = source.slice();
+	for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}

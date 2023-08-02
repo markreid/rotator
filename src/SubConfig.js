@@ -33,12 +33,15 @@ const SubConfig = () => {
 	const [ready, setReady] = useState(false);
 	const [effectTrigger, setEffectTrigger] = useState(Math.random());
 	const resetFromSaved = () => setEffectTrigger(Math.random());
+	const [hasChanged, setHasChanged] = useState(false);
 
+	// this doesn't _really_ need to happen in an effect...
 	useEffect(() => {
 		const subSettings = getConfig("subConfig", { ...DEFAULT_SETTINGS });
 		setPlayersPerSub(subSettings.playersPerSub);
 		setSubMultiplier(subSettings.subMultiplier);
 		setReady(true);
+		setHasChanged(false);
 	}, [effectTrigger]);
 
 	// lots of complicated derived state below
@@ -62,8 +65,16 @@ const SubConfig = () => {
 			playersPerSub,
 			subMultiplier,
 		});
+		setHasChanged(false);
 		resetFromSaved();
 	};
+
+	
+	// call a state setter function and flag hasChanged as true
+	const changeAndSet = (setter) => (val) => {
+		setter(val);
+		setHasChanged(true);
+	}
 
 	return (
 		<div className="SubConfig page">
@@ -78,7 +89,7 @@ const SubConfig = () => {
 								min={1}
 								max={Math.max(numPlayers - numPlayersOn, 1)}
 								value={playersPerSub}
-								onChange={setPlayersPerSub}
+								onChange={changeAndSet(setPlayersPerSub)}
 							/>
 						</li>
 
@@ -90,7 +101,7 @@ const SubConfig = () => {
 								displayValue={formatClock(subEvery)}
 								min={1}
 								max={30}
-								onChange={(val) => setSubMultiplier(val)}
+								onChange={changeAndSet(setSubMultiplier)}
 								readonly={true}
 							/>
 						</li>
@@ -113,16 +124,18 @@ const SubConfig = () => {
 						<b>{formatClock(benchMinutesEach)} off</b>.
 					</p>
 
-					<div className="GameConfig-buttons">
+					<div className="BigButtons">
 						<button
-							className="GameConfig-buttons-button"
+							className="BigButtons-button"
 							onClick={saveToConfig}
+							disabled={!hasChanged}
 						>
 							SAVE
 						</button>
 						<button
-							className="GameConfig-buttons-button"
+							className="BigButtons-button dangerous"
 							onClick={resetFromSaved}
+							disabled={!hasChanged}
 						>
 							RESET
 						</button>
