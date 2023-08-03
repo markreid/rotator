@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS = {
 	subMultiplier: 1,
 };
 
-const SubConfig = () => {
+const SubConfig = ({ navigateTo }) => {
 	const players = getConfig("players", []);
 	const { numPlayersOn, periodLengthMinutes } = getConfig("gameSettings", {});
 
@@ -146,6 +146,11 @@ const SubConfig = () => {
 			{ready && numChanges === 0 && (<>
 				<p className="GameConfig-summary">You don't have enough players to make subs.</p>
 				<p className="GameConfig-summary">You may need to update your players or change the game settings.</p>
+
+				<div className="BigButtons">
+					<button onClick={() => navigateTo('PLAYERS')} className="BigButtons-button">Edit Players</button>
+					<button onClick={() => navigateTo('GAME SETTINGS')} className="BigButtons-button alt">Configure Game</button>
+				</div>
 			</>)}
 
 			

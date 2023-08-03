@@ -11,6 +11,11 @@
 }
 
 
+html, body {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .App {
   height: 100vh;
   overflow: auto;
@@ -31,6 +36,10 @@
 
 .page {
 
+}
+
+.pad {
+  padding: 1rem;
 }
 
 .page-title {

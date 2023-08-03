@@ -6,19 +6,27 @@ import Menu from "./Menu";
 import PlayerConfig from "./PlayerConfig";
 import GameConfig from "./GameConfig";
 import SubConfig from "./SubConfig";
+import ResetConfig from './ResetConfig';
 import Game from "./Game";
+import ErrorBoundary from './ErrorBoundary';
+
+
 
 const App = () => {
   
-  const [screen, setScreen] = useState("GAME");
+  const [route, navigateTo] = useState("GAME");
+
 
   return (
     <div className="App">
-      <Menu screen={screen} setScreen={setScreen} />
-        {screen === "PLAYERS" && <PlayerConfig />}
-        {screen === "GAME SETTINGS" && <GameConfig />}
-        {screen === "SUB SETTINGS" && <SubConfig />}
-        {screen === "GAME" && <Game />}
+      <ErrorBoundary>
+        <Menu navigateTo={navigateTo} />
+        {route === "PLAYERS" && <PlayerConfig />}
+        {route === "GAME SETTINGS" && <GameConfig />}
+        {route === "SUB SETTINGS" && <SubConfig navigateTo={navigateTo} />}
+        {route === "RESET" && <ResetConfig />}
+        {route === "GAME" && <Game />}
+      </ErrorBoundary>
     </div>
   );
 };

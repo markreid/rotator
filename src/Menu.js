@@ -17,11 +17,11 @@ const MenuDivider = ({ title }) => (
 	<li className="Menu-list-item Menu-divider">{title}</li>
 );
 
-const Menu = ({ screen, setScreen }) => {
+const Menu = ({ screen, navigateTo }) => {
 	const [visible, setVisible] = useState(false);
 
-	const navigate = (destination) => {
-		setScreen(destination);
+	const openLink = (destination) => {
+		navigateTo(destination);
 		setVisible(false);
 	};
 
@@ -38,12 +38,13 @@ const Menu = ({ screen, setScreen }) => {
 				<>
 					<ul className="Menu-list">
 						<MenuDivider title="Game" />
-						<MenuItem link="Game" navigate={navigate} />
+						<MenuItem link="Game" navigate={openLink} />
 
 						<MenuDivider title="Settings" />
-						<MenuItem link="Players" navigate={navigate} />
-						<MenuItem link="Game Settings" navigate={navigate} />
-						<MenuItem link="Sub Settings" navigate={navigate} />
+						<MenuItem link="Players" navigate={openLink} />
+						<MenuItem link="Game Settings" navigate={openLink} />
+						<MenuItem link="Sub Settings" navigate={openLink} />
+						<MenuItem link="Reset" navigate={openLink} />
 					</ul>
 				</>
 			)}
