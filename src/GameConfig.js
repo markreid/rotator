@@ -4,51 +4,39 @@ import NumericInput from "./NumericInput";
 
 import "./GameConfig.css";
 
-import { getConfig, saveConfig, pluralise } from "./util";
-
-const DEFAULT_SETTINGS = {
-	numPeriods: 1,
-	periodLengthMinutes: 15,
-	numPlayersOn: 4,
-};
+import { pluralise } from "./util";
+import { getConfig, saveConfig } from './configs';
 
 const PERIOD_NAMES = ["periods", "period", "halves", "thirds", "quarters"];
 
 const GameConfig = ({ subMultiplier, setSubMultiplier }) => {
-	// set default state
-	// but we'll override from localStorage in the useEffect
-	const [numPeriods, setNumPeriods] = useState(DEFAULT_SETTINGS.numPeriods);
-	const [numPlayersOn, setNumPlayersOn] = useState(
-		DEFAULT_SETTINGS.numPlayersOn
-	);
-	const [periodLengthMinutes, setPeriodLengthMinutes] = useState(
-		DEFAULT_SETTINGS.periodLength
-	);
+	const [numPeriods, setNumPeriods] = useState(null);
+	const [numPlayersOn, setNumPlayersOn] = useState(null);		
+	const [periodLengthMinutes, setPeriodLengthMinutes] = useState(null);		
 
 	const [ready, setReady] = useState(false);
 	const [hasChanged, setHasChanged] = useState(false);
 
-	// use this to re-run the effect which fetches config from localstorage
-	const [effectTrigger, setEffectTrigger] = useState(Math.random());
-	const resetFromSaved = () => setEffectTrigger(Math.random());
+	const [resetTrigger, setResetTrigger] = useState(Math.random());
+	const resetFromSaved = () => setResetTrigger(Math.random());
 
 	useEffect(() => {
-		const gameSettings = getConfig("gameSettings", { ...DEFAULT_SETTINGS });
-
+		const gameSettings = getConfig("gameConfig");
 		setNumPeriods(gameSettings.numPeriods);
 		setNumPlayersOn(gameSettings.numPlayersOn);
 		setPeriodLengthMinutes(gameSettings.periodLengthMinutes);
 		setReady(true);
 		setHasChanged(false);
-	}, [effectTrigger]);
+	}, [resetTrigger]);
+
+	if (!ready) return null;
 
 	const saveToConfig = () => {
-		saveConfig("gameSettings", {
+		saveConfig("gameConfig", {
 			numPeriods,
 			numPlayersOn,
 			periodLengthMinutes,
 		});
-		resetFromSaved();
 		setHasChanged(false);
 	};
 

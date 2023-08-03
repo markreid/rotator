@@ -6,60 +6,48 @@ import Timer from "./Timer";
 import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
 
-import {
-	minutesToSeconds,
-	calcSubTimes,
-	getConfig,
-	saveConfig,
-	calcClockSeconds,
-} from "./util";
+import { minutesToSeconds, calcSubTimes, calcClockSeconds } from "./util";
 
-const CLOCK_DEFAULTS = {
-	clockRunning: false,
-	clockStartedAt: null,
-	secondsAtStart: 0,
-};
+import { getConfig, saveConfig, resetConfig } from "./configs";
+
+const SUB_TIME_THRESHOLD = 60;
 
 const Game = () => {
-	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameSettings] =
+	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameConfig] =
 		useState({});
-
-	const [configReady, setConfigReady] = useState(false);
+	const [ready, setReady] = useState(false);
 	const [players, setPlayers] = useState([]);
-	const [{ playersPerSub }, setSubSettings] = useState({});
+	const [{ playersPerSub }, setSubConfig] = useState({});
 	const [subTimes, setSubTimes] = useState([]);
 
-	useEffect(
-		() => {
-			// none of this is async, it could just happen directly above?
-			const savedPlayers = getConfig("players", []);
-			const savedSubSettings = getConfig("subConfig", {});
-			const savedGameSettings = getConfig("gameSettings", {});
+	const [subs, setSubs] = useState(getConfig("subs"));
 
-			setPlayers(savedPlayers);
-			setSubSettings(savedSubSettings);
-			setGameSettings(savedGameSettings);
+	useEffect(() => {
+		const savedPlayers = getConfig("players");
+		const savedSubsConfig = getConfig("subsConfig");
+		const savedGameConfig = getConfig("gameConfig");
 
-			setSubTimes(
-				calcSubTimes(savedGameSettings, savedSubSettings, savedPlayers)
-			);
-			setConfigReady(true);
+		setPlayers(savedPlayers);
+		setSubConfig(savedSubsConfig);
+		setGameConfig(savedGameConfig);
 
-			// todo - if there are no game settings set some key to show
-			// that we're doing a fresh load
-		},
-		[
-			// reloadConfigKey
-		]
-	);
+		setSubTimes(
+			calcSubTimes(savedGameConfig, savedSubsConfig, savedPlayers)
+		);
+		setReady(true);
+
+		// todo - if there are no game settings set some key to show
+		// that we're doing a fresh load
+	}, []);
 
 	// game state
 	const currentPeriod = 1;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
 
-	const [clock, setClock] = useState(getConfig("clock", CLOCK_DEFAULTS));
+	const [clock, setClock] = useState(getConfig("clock"));
 	const [clockTime, setClockTime] = useState(
-		calcClockSeconds(getConfig("clock", CLOCK_DEFAULTS))
+		// todo - i think replace this with the clock var from above
+		calcClockSeconds(getConfig("clock"))
 	);
 
 	// update our game clock every second while the clock is running.
@@ -68,13 +56,17 @@ const Game = () => {
 		if (!clock.clockRunning) return;
 
 		const timer = setInterval(() => {
-			setClockTime(calcClockSeconds(clock));
+			const ct = calcClockSeconds(clock);
+			setClockTime(ct);
+			if (ct >= periodLengthSeconds) {
+				stopClock();
+				// todo - do something, the period's over
+			}
 		}, 1000);
 		return () => clearInterval(timer);
-	}, [clock]);
+	}, [clock, periodLengthSeconds]);
 
 	const startClock = () => {
-		setClock(true);
 		const oldClock = getConfig("clock");
 		const newClock = {
 			...oldClock,
@@ -86,29 +78,37 @@ const Game = () => {
 	};
 
 	const stopClock = () => {
-		const newClock = {
+		const stoppedClock = {
 			clockRunning: false,
 			clockStartedAt: null,
 			secondsAtStart: clockTime,
 		};
-		saveConfig("clock", newClock);
-		setClock(newClock);
+		setClock(stoppedClock);
+		saveConfig("clock", stoppedClock);
 	};
 
-	// helpers
 	const toggleClock = () => {
 		return clock.clockRunning ? stopClock() : startClock();
 	};
 
+	// reset the subs
+	const resetSubs = () => {
+		const newSubs = [
+			{
+				on: players.slice(0, numPlayersOn),
+				off: players.slice(numPlayersOn),
+				clockTime: 0,
+				numChanges: 0,
+			},
+		];
+		setSubs(newSubs);
+		saveConfig("subs", newSubs);
+	};
+
 	const resetClock = () => {
 		setClockTime(0);
-		const newClock = {
-			clockRunning: false,
-			clockStartedAt: null,
-			secondsAtStart: 0,
-		};
-		saveConfig("clock", newClock);
-		setClock(newClock);
+		resetSubs();
+		setClock(resetConfig("clock"));
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
@@ -141,26 +141,52 @@ const Game = () => {
 	const makeSub = () => {
 		if (on.length !== off.length) return;
 
-		// sub the players
-		setPlayers(
-			[].concat(
-				players
-					.slice(0, numPlayersOn)
-					.filter((player) => !off.includes(player)),
-				on,
-				players
-					.slice(numPlayersOn)
-					.filter((player) => !on.includes(player)),
-				off
-			)
+		// update the player list
+		const subbedPlayers = [].concat(
+			players
+				.slice(0, numPlayersOn)
+				.filter((player) => !off.includes(player)),
+			on,
+			players
+				.slice(numPlayersOn)
+				.filter((player) => !on.includes(player)),
+			off
 		);
+
+		setPlayers(subbedPlayers);
+		saveConfig("players", subbedPlayers);
+
+		// if we're within the threshold, remove
+		// the first entry in subTimes
+		if (subTimes[0] - clockTime <= SUB_TIME_THRESHOLD) {
+			setSubTimes(subTimes.slice(1));
+		}
 
 		// reset selected
 		setOn([]);
 		setOff([]);
+
+		// log the sub
+		const sub = {
+			on: subbedPlayers.slice(0, numPlayersOn),
+			off: subbedPlayers.slice(numPlayersOn),
+			clockTime,
+			numChanges: on.length,
+		};
+		// if the clock hasn't started, replace the first one.
+		const newSubs = clockTime === 0 ? [sub] : subs.concat([sub]);
+		setSubs(newSubs);
+		saveConfig("subs", newSubs);
 	};
 
-	return !configReady ? null : (
+	
+	const [containerClassName, setContainerClassName] = useState(false);
+	const setContainerClass = (className) =>
+		setContainerClassName(
+			className === containerClassName ? "" : className
+		);
+
+	return !ready ? null : (
 		<div className="Game">
 			<Timer
 				{...{
@@ -200,12 +226,22 @@ const Game = () => {
 				)}
 			</div>
 
-			<div className="PlayerList-titles">
-				<h2 className="PlayerList-title field">Field</h2>
-				<h2 className="PlayerList-title bench">Bench</h2>
+			<div className={`PlayerList-titles ${containerClassName}`}>
+				<h2
+					className="PlayerList-title field"
+					onClick={() => setContainerClass("field")}
+				>
+					Field
+				</h2>
+				<h2
+					className="PlayerList-title bench"
+					onClick={() => setContainerClass("bench")}
+				>
+					Bench
+				</h2>
 			</div>
 
-			<div className="PlayerList-container">
+			<div className={`PlayerList-container ${containerClassName}`}>
 				<PlayerList
 					{...{
 						players: playersOnField,
@@ -223,6 +259,8 @@ const Game = () => {
 					}}
 				/>
 			</div>
+
+			
 		</div>
 	);
 };

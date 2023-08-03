@@ -3,48 +3,44 @@ import { useState, useEffect } from "react";
 import "./SubConfig.css";
 import {
 	pluralise,
-	getConfig,
-	saveConfig,
 	minutesToSeconds,
 	calcChanges,
 	formatClock,
 } from "./util";
 
+import { getConfig, saveConfig } from'./configs';
+
 import NumericInput from "./NumericInput";
 
-const DEFAULT_SETTINGS = {
-	playersPerSub: 1,
-	subMultiplier: 1,
-};
 
 const SubConfig = ({ navigateTo }) => {
-	const players = getConfig("players", []);
-	const { numPlayersOn, periodLengthMinutes } = getConfig("gameSettings", {});
-
-	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
-
-	const [playersPerSub, setPlayersPerSub] = useState(
-		DEFAULT_SETTINGS.playersPerSub
-	);
-	const [subMultiplier, setSubMultiplier] = useState(
-		DEFAULT_SETTINGS.subMultiplier
-	);
+	const [players, setPlayers] = useState(null);
+	const [gameConfig, setGameConfig] = useState(null);
+	const [playersPerSub, setPlayersPerSub] = useState(null);
+	const [subMultiplier, setSubMultiplier] = useState(null);
 
 	const [ready, setReady] = useState(false);
-	const [effectTrigger, setEffectTrigger] = useState(Math.random());
-	const resetFromSaved = () => setEffectTrigger(Math.random());
+	const [resetTrigger, setResetTrigger] = useState(Math.random());
+	const resetFromSaved = () => setResetTrigger(Math.random());
 	const [hasChanged, setHasChanged] = useState(false);
 
-	// this doesn't _really_ need to happen in an effect...
 	useEffect(() => {
-		const subSettings = getConfig("subConfig", { ...DEFAULT_SETTINGS });
-		setPlayersPerSub(subSettings.playersPerSub);
-		setSubMultiplier(subSettings.subMultiplier);
+		const subConfig = getConfig('subsConfig');
+		setPlayersPerSub(subConfig.playersPerSub);
+		setSubMultiplier(subConfig.subMultiplier);
+			
+		setPlayers(getConfig('players'));
+		setGameConfig(getConfig('gameConfig'));
+
 		setReady(true);
 		setHasChanged(false);
-	}, [effectTrigger]);
+	}, [resetTrigger]);
+
+	if (!ready) return null;
 
 	// lots of complicated derived state below
+	const { numPlayersOn } = gameConfig;
+	const periodLengthSeconds = minutesToSeconds(gameConfig.periodLengthMinutes);
 	const numPlayers = players.length;
 	const numPlayersOff = numPlayers - numPlayersOn;
 
@@ -61,7 +57,7 @@ const SubConfig = ({ navigateTo }) => {
 	const timeOnField = changesOnField * subEvery;
 
 	const saveToConfig = () => {
-		saveConfig("subConfig", {
+		saveConfig("subsConfig", {
 			playersPerSub,
 			subMultiplier,
 		});

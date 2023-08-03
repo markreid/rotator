@@ -56,16 +56,6 @@ export const calcMinChanges = (numPlayersOn, numPlayers, playersPerSub) => {
 export const calcChanges = (numPlayersOn, numPlayers, playersPerSub, subMultiplier) => calcMinChanges(numPlayersOn, numPlayers, playersPerSub) * subMultiplier;
 
 
-// pull data from localStorage
-export const getConfig = (key, fallback = null) => {
-	return JSON.parse(localStorage.getItem(`rotator.${key}`)) || fallback;
-}
-
-// save data to localStorage
-export const saveConfig = (key, value) => {
-	return localStorage.setItem(`rotator.${key}`, JSON.stringify(value));
-}
-
 // number of seconds since a date
 export const secondsSince = (date) => Math.round((Date.now() - new Date(date)) / 1000);
 
@@ -86,3 +76,40 @@ export const shuffle = (source) => {
   }
   return arr;
 }
+
+export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
+	// first map the player names
+	const map = players.reduce((acc, player) => ({
+		...acc,
+		[player]: {
+			on: 0,
+			off: 0,
+			lastOn: 0,
+			lastOff: 0,
+		},
+	}), {});
+
+
+	const windows = subs.map((sub, i) => ({
+		...sub,
+		length: (subs[i + 1]?.clockTime || clockTime) - sub.clockTime,
+	}));
+
+	windows.forEach((window) => {
+		window.on.forEach((playerName, i) => {
+			const player = map[playerName];
+			player.on = player.on + window.length;
+			const wasSubbed = i >= window.on.length - window.numChanges;
+			player.lastOn = wasSubbed? window.clockTime : player.lastOn;
+		});
+		window.off.forEach((playerName, i) => {
+			const player = map[playerName];
+			player.off = player.off + window.length;
+			const wasSubbed = i >= window.off.length - window.numChanges;
+			player.lastOff = wasSubbed ? window.clockTime : player.lastOff;
+		});
+	});
+
+
+	return map;
+};

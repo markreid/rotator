@@ -1,10 +1,10 @@
 import { useState } from "react";
 
+
+import { resetAll } from './configs';
+
 const reset = () => {
-	localStorage.removeItem("rotator.players");
-	localStorage.removeItem("rotator.playerSettings");
-	localStorage.removeItem("rotator.subSettings");
-	localStorage.removeItem("rotator.gameSettings");
+	resetAll();
 	document.location.reload();
 };
 
