@@ -19,7 +19,7 @@ const MenuDivider = ({ title }) => (
 	<li className="Menu-list-item Menu-divider">{title}</li>
 );
 
-const Menu = ({ screen, navigateTo, route }) => {
+const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 	const [visible, setVisible] = useState(false);
 
 	const openLink = (destination) => {
@@ -30,8 +30,19 @@ const Menu = ({ screen, navigateTo, route }) => {
 	return (
 		<div className={`Menu ${visible ? "visible" : ""}`}>
 			<div className="Menu-bar">
-				{route === 'GAME' && (<Lock />)}
+				{route === "GAME" && !visible && (
+					<>
+						<Lock />
+						<button
+							className="Menu-subroute-button"
+							onClick={() => setSubRoute(subRoute === 'subs' ? null : "subs")}
+						>
+							Mode
+						</button>
+					</>
+				)}
 				<h1 className="Menu-title">Rotator</h1>
+
 				<button
 					className="Menu-burger"
 					onClick={() => setVisible(!visible)}

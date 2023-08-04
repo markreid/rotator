@@ -23,12 +23,29 @@
 	display: flex;
 	height: 3rem;
 	line-height: 3rem;
+	padding: 0.5rem 0;
 }
 
 .Menu.visible .Menu-bar {
 	border-bottom: 1px solid var(--c2);
 	height: 3rem;
 	line-height: 3rem;
+}
+
+.Menu-subroute-button {
+	display: block;
+	margin: 0 auto;
+	border: none;
+	background: none;
+	border: 1px solid white;
+	color: white;
+	padding: 0 0.5rem;
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+}
+
+.Menu-subroute-button:active {
+	background: rgba(255, 255, 255, 0.5);
 }
 
 .Menu-title {
@@ -48,11 +65,12 @@
 }
 
 .Menu-burger {
+	position: absolute;
+	right: 0;
+	top: 0;
 	background: none;
 	border: none;
 	font-size: 2rem;
-	position: absolute;
-	right: 0;
 	line-height: inherit;
 	width: 3rem;
 	padding: 0 4px 0 0;
@@ -89,3 +107,4 @@
 	padding: 1rem;
 	background: var(--c4);
 }
+

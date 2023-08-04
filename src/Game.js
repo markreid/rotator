@@ -5,6 +5,7 @@ import "./Game.css";
 import Timer from "./Timer";
 import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
+import Subs from './Subs';
 
 import {
 	minutesToSeconds,
@@ -24,7 +25,7 @@ import {
 	NEXT_SUB_WARNING,
 } from "./configs";
 
-const Game = () => {
+const Game = ({ subRoute}) => {
 	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameConfig] =
 		useState({});
 	const [ready, setReady] = useState(false);
@@ -249,6 +250,7 @@ const Game = () => {
 				}}
 			/>
 
+
 			<NextSub
 				{...{
 					subTimes,
@@ -256,6 +258,20 @@ const Game = () => {
 				}}
 			/>
 
+			{subRoute === 'subs' ? (
+				<Subs {...{
+					subs,
+					players,
+					clockTime,
+					numPlayersOn,
+					playerSecondsEach,
+					benchSecondsEach,
+					timeOnBench,
+					timeOnField,
+					timeOn,
+				}} />
+			) : (
+			<>
 			<div className="Sub-Button">
 				{!on.length && !off.length ? (
 					<button
@@ -312,6 +328,11 @@ const Game = () => {
 					}}
 				/>
 			</div>
+			</>
+
+			)}
+
+			
 
 			
 		</div>
