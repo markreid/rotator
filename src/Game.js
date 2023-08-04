@@ -34,6 +34,9 @@ const Game = () => {
 
 	const [subs, setSubs] = useState(getConfig("subs"));
 
+	const [resetTrigger, setResetTrigger] = useState(Math.random());
+	const reset = () => setResetTrigger(Math.random());
+
 	useEffect(() => {
 		const savedPlayers = getConfig("players");
 		const savedSubsConfig = getConfig("subsConfig");
@@ -43,14 +46,13 @@ const Game = () => {
 		setSubConfig(savedSubsConfig);
 		setGameConfig(savedGameConfig);
 
+		// you could put this in its own effect
 		setSubTimes(
 			calcSubTimes(savedGameConfig, savedSubsConfig, savedPlayers)
 		);
 		setReady(true);
 
-		// todo - if there are no game settings set some key to show
-		// that we're doing a fresh load
-	}, []);
+	}, [resetTrigger]);
 
 	// game state
 	const currentPeriod = 1;
@@ -134,6 +136,7 @@ const Game = () => {
 		setClockTime(0);
 		resetSubs();
 		setClock(resetConfig("clock"));
+		reset();
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
