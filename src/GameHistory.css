@@ -1,0 +1,30 @@
+.GameHistory {
+	font-size: 1.2rem;
+	color: var(--c5);
+}
+
+.GameHistory-title, .GameHistory-starters {
+	padding: 1rem;
+	margin: 0 0 1rem;
+}
+
+.GameHistory-title {
+	margin: 0 0 1rem;
+}
+
+.GameHistory-list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;	
+}
+
+.GameHistory-list-item {
+	padding: 1rem;
+	border-bottom: 1px dashed grey;
+	background: var(--c2);
+	box-shadow: inner 0 0 13px var(--c3);
+}
+
+.GameHistory-list-item:nth-child(odd) {
+	background: var(--c3);
+}
