@@ -11,7 +11,7 @@
 
 .ProgressBar-inner {
 	height: 100%;
-	transition: width 0.5s linear;
+	transition: width 1s linear;
 	border-radius: inherit;
 }
 
@@ -20,7 +20,7 @@
 	position: relative;
 	top: -100%;
 	border-radius: inherit;
-	transition: width 0.5s linear;
+	transition: width 1s linear;
 }
 
 .ProgressBar-label {
