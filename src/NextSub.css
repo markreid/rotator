@@ -2,6 +2,13 @@
 	padding: 0.5rem;
 	background: var(--c5);
 	color: white;
+	height: 5rem;
+	overflow: hidden;
+	transition: height 0.5s ease-in-out;
+}
+
+.NextSub.expanded {
+	height: 12rem;
 }
 
 .NextSub-title {

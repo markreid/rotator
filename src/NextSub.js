@@ -8,20 +8,20 @@ const NextSub = ({
 	clockTime,
 	subTimes,
 }) => {
-	const [showMore, setShowMore] = useState(false);
+	const [expanded, setExpanded] = useState(false);
 
 	return (
-		<div className="NextSub">
+		<div className={`NextSub ${expanded ? 'expanded' : ''}`}>
 			<h3 className="NextSub-title">Next sub:</h3>
 			<ul className="NextSub-list">
-				{subTimes.slice(0, showMore ? 3 : 1).map((time) => (
+				{subTimes.slice(0, 3).map((time) => (
 					<li
 						key={time}
 						className={`Sub-time ${
 							clockTime > time ? "overdue" : ""
 						}`}
 					>
-						<button onClick={() => setShowMore(!showMore)}>
+						<button onClick={() => setExpanded(!expanded)}>
 							{formatClock(time - clockTime)}
 						</button>
 					</li>
