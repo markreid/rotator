@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/rotator/static/css/main.08ea6cca.css",
-    "main.js": "/rotator/static/js/main.a4bc6778.js",
+    "main.js": "/rotator/static/js/main.2aea8bc9.js",
     "static/js/787.16086ab6.chunk.js": "/rotator/static/js/787.16086ab6.chunk.js",
     "service-worker.js": "/rotator/service-worker.js",
     "index.html": "/rotator/index.html",
     "main.08ea6cca.css.map": "/rotator/static/css/main.08ea6cca.css.map",
-    "main.a4bc6778.js.map": "/rotator/static/js/main.a4bc6778.js.map",
+    "main.2aea8bc9.js.map": "/rotator/static/js/main.2aea8bc9.js.map",
     "787.16086ab6.chunk.js.map": "/rotator/static/js/787.16086ab6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.08ea6cca.css",
-    "static/js/main.a4bc6778.js"
+    "static/js/main.2aea8bc9.js"
   ]
 }
