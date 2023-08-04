@@ -41,6 +41,24 @@
   flex: 1;  
 }
 
+
+.PlayerList-titles, .PlayerList-container {
+	transition: width 0.2s linear, left 0.2s linear;
+	width: 100vw;
+	left: 0;
+	position: relative;
+}
+.PlayerList-titles.off, .PlayerList-container.off {
+	width: 200vw;
+	position: relative;
+	left: -100%;
+}
+
+.PlayerList-titles.on, .PlayerList-container.on {
+	width: 200vw;
+	left: 0;
+}
+
 .PlayerList-titles-sub-button {
 	width: 100%;
 	padding: 1rem;	
@@ -59,19 +77,19 @@
 }
 
 
-.PlayerList.field .PlayerList-list-item, .PlayerList-title.field {
+.PlayerList.on .PlayerList-list-item, .PlayerList-title.on {
 	background: var(--c2);
 }
 
-.PlayerList.field .PlayerList-list-item.selected {
+.PlayerList.on .PlayerList-list-item.selected {
 	background: var(--off);
 	color: white;
 }
 
-.PlayerList.bench .PlayerList-list-item,  .PlayerList-title.bench {
+.PlayerList.off .PlayerList-list-item,  .PlayerList-title.off {
 	background: var(--c3);
 }
 
-.PlayerList.bench .PlayerList-list-item.selected {
+.PlayerList.off .PlayerList-list-item.selected {
 	background: var(--on);
 }

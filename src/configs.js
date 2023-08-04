@@ -39,7 +39,14 @@ export const getConfig = (key) => JSON.parse(localStorage.getItem(`rotator.${key
 export const saveConfig = (key, value) => 
 	localStorage.setItem(`rotator.${key}`, JSON.stringify(value));
 
-// clear all the localStorage keys
+// reset to a default value
+export const resetConfig = (key) => {
+	const defaultValue = getDefaults(key);
+	saveConfig(key, defaultValue);
+	return defaultValue;
+}
+
+// clear everything
 export const resetAll = () => 
 	Object.keys(DEFAULTS).forEach((key) => 
 		localStorage.removeItem(`rotator.${key}`)
