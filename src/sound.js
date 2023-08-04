@@ -1,8 +1,6 @@
-const audioElement = new Audio();
+import { Howl } from 'howler';
 
-
-
-const SOUNDS = {
+export const SOUNDS = {
 	nextSubReady: 'alert_simple.wav',
 	nextSubSoon: 'alert_high-intensity.wav',
 	periodFinished: 'ringtone_minimal.wav',
@@ -12,15 +10,13 @@ const SOUNDS = {
 	makeSub: 'navigation_forward-selection-minimal.wav',
 };
 
-export const playSound = (sound) => {	
-	try {
-		audioElement.src = `sounds/${SOUNDS[sound]}`;
-		audioElement.play().catch(console.error);
-	} catch (error) {
-		console.error(error);
-	}	
-}
+const howls = Object.keys(SOUNDS).reduce((acc, sound) => ({
+	...acc,
+	[sound]: new Howl({
+		src: [`sounds/${SOUNDS[sound]}`]
+	}),
+}), {});
 
-export const stopSound = () => {
-	audioElement.pause();
-}
+export const playSound = (sound) => howls[sound].play();
+	
+export const stopSound = (sound) => howls[sound].stop();
