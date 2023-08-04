@@ -14,7 +14,15 @@ import {
 	calcChanges,
 } from "./util";
 
-import { getConfig, saveConfig, resetConfig, SUB_TIME_THRESHOLD } from "./configs";
+import { playSound } from "./sound";
+
+import {
+	getConfig,
+	saveConfig,
+	resetConfig,
+	SUB_TIME_THRESHOLD,
+	NEXT_SUB_WARNING,
+} from "./configs";
 
 const Game = () => {
 	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameConfig] =
@@ -62,9 +70,21 @@ const Game = () => {
 		const timer = setInterval(() => {
 			const ct = calcClockSeconds(clock);
 			setClockTime(ct);
+
+			// next sub coming up
+			if (subTimes.includes(ct + NEXT_SUB_WARNING)) {
+				playSound("nextSubSoon");
+			}
+
+			// next sub!
+			if (subTimes.includes(ct)) {
+				playSound("nextSubReady");
+			}
+
+			// period finshed
 			if (ct >= periodLengthSeconds) {
 				stopClock();
-				// todo - do something, the period's over
+				playSound("periodFinished");
 			}
 		}, 1000);
 		return () => clearInterval(timer);
@@ -79,6 +99,7 @@ const Game = () => {
 		};
 		saveConfig("clock", newClock);
 		setClock(newClock);
+		playSound("clockStart");
 	};
 
 	const stopClock = () => {
@@ -185,6 +206,7 @@ const Game = () => {
 		const newSubs = clockTime === 0 ? [sub] : subs.concat([sub]);
 		setSubs(newSubs);
 		saveConfig("subs", newSubs);
+		playSound("makeSub");
 	};
 
 	// todo - this logic is duplicate in subConfig
@@ -205,12 +227,6 @@ const Game = () => {
 	const timeOnBench = changesOnBench * subEvery;
 	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
 	const timeOnField = changesOnField * subEvery;
-
-	const [containerClassName, setContainerClassName] = useState("");
-	const setContainerClass = (className) =>
-		setContainerClassName(
-			className === containerClassName ? "" : className
-		);
 
 	if (!ready) return null;
 
@@ -262,22 +278,12 @@ const Game = () => {
 				</button>
 			</div>
 
-			<div className={`PlayerList-titles ${containerClassName}`}>
-				<h2
-					className="PlayerList-title on"
-					onClick={() => setContainerClass("field")}
-				>
-					Field
-				</h2>
-				<h2
-					className="PlayerList-title off"
-					onClick={() => setContainerClass("bench")}
-				>
-					Bench
-				</h2>
+			<div className="PlayerList-titles">
+				<h2 className="PlayerList-title on">Field</h2>
+				<h2 className="PlayerList-title off">Bench</h2>
 			</div>
 
-			<div className={`PlayerList-container ${containerClassName}`}>
+			<div className="PlayerList-container">
 				<PlayerList
 					{...{
 						players: playersOnField,
@@ -303,6 +309,8 @@ const Game = () => {
 					}}
 				/>
 			</div>
+
+			
 		</div>
 	);
 };

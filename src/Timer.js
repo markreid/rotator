@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import "./Timer.css";
 import { formatClock } from "./util";
+import { stopSound } from './sound';
 
 const Timer = ({
 	clockTime,
@@ -12,25 +13,17 @@ const Timer = ({
 	currentPeriod,
 	numPeriods,
 }) => {
-	// toggle between display modes
-	// either show the timer going up, or the time remaining
-	const [remainingMode, setRemainingMode] = useState(true);
-	const toggleMode = () => setRemainingMode((mode) => !mode);
-
 	// we could hide the buttons by default so you don't push them by mistake
 	const [showButtons] = useState(true);
 
 	return (
 		<div className="Timer">
 			<div className="Timer-face">
-			<button onClick={toggleMode} className="Timer-face-clock">
-				{formatClock(
-					remainingMode ? periodLengthSeconds - clockTime : clockTime
-				)}				
+			<button onClick={stopSound} className="Timer-face-clock">
+				{formatClock(periodLengthSeconds - clockTime)}				
 			</button>
 			<p className="Timer-face-periods">{currentPeriod} / {numPeriods}</p>
 			</div>
-
 
 			{showButtons ? (
 				<div className="Timer-buttons">

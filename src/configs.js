@@ -30,6 +30,7 @@ export const DEFAULTS = {
 // suggested sub time, we clear that sub time from 
 // the list.
 export const SUB_TIME_THRESHOLD = 30;
+export const NEXT_SUB_WARNING = 5;
 
 
 export const getDefaults = (key) => {
