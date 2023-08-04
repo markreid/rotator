@@ -11,7 +11,6 @@ import Game from "./Game";
 import ErrorBoundary from './ErrorBoundary';
 
 
-
 const App = () => {
   
   const [route, navigateTo] = useState("GAME");
@@ -20,7 +19,7 @@ const App = () => {
   return (
     <div className="App">
       <ErrorBoundary>
-        <Menu navigateTo={navigateTo} />
+        <Menu navigateTo={navigateTo} route={route} />
         {route === "PLAYERS" && <PlayerConfig />}
         {route === "GAME SETTINGS" && <GameConfig />}
         {route === "SUB SETTINGS" && <SubConfig navigateTo={navigateTo} />}

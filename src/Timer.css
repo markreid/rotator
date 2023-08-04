@@ -26,6 +26,9 @@
 	margin: 0;
 	color: #ddd;
 	font-weight: bold;
+
+	/* hide for now */
+	display: none;
 }
 
 .Timer-buttons {

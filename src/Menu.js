@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import "./Menu.css";
 
+import Lock from "./Lock";
+
 const MenuItem = ({ link, navigate }) => (
 	<li className="Menu-list-item">
 		<button
@@ -17,7 +19,7 @@ const MenuDivider = ({ title }) => (
 	<li className="Menu-list-item Menu-divider">{title}</li>
 );
 
-const Menu = ({ screen, navigateTo }) => {
+const Menu = ({ screen, navigateTo, route }) => {
 	const [visible, setVisible] = useState(false);
 
 	const openLink = (destination) => {
@@ -27,12 +29,16 @@ const Menu = ({ screen, navigateTo }) => {
 
 	return (
 		<div className={`Menu ${visible ? "visible" : ""}`}>
-			<button
-				className="Menu-burger"
-				onClick={() => setVisible(!visible)}
-			>
-				⚙️
-			</button>
+			<div className="Menu-bar">
+				{route === 'GAME' && (<Lock />)}
+				<h1 className="Menu-title">Rotator</h1>
+				<button
+					className="Menu-burger"
+					onClick={() => setVisible(!visible)}
+				>
+					⚙️
+				</button>
+			</div>
 
 			{visible && (
 				<>
