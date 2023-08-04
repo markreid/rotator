@@ -1,0 +1,23 @@
+.GameStats {
+
+}
+
+.GameStats-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.GameStats-list-item {
+	padding: 1rem;
+	font-size: 1.25rem;
+}
+
+.GameStats-list-item-player {
+	color: var(--c5);
+	margin: 0 0 1rem;
+}
+
+.GameStats-list-item .ProgressBar.on {
+	margin: 0 0 0.2rem;
+}

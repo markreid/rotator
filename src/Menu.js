@@ -35,7 +35,7 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 						<Lock />
 						<button
 							className="Menu-subroute-button"
-							onClick={() => setSubRoute(subRoute === 'subs' ? null : "subs")}
+							onClick={() => setSubRoute(subRoute === 'stats' ? null : "stats")}
 						>
 							Mode
 						</button>

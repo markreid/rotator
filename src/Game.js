@@ -5,7 +5,7 @@ import "./Game.css";
 import Timer from "./Timer";
 import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
-import Subs from './Subs';
+import GameStats from './GameStats';
 
 import {
 	minutesToSeconds,
@@ -258,8 +258,8 @@ const Game = ({ subRoute}) => {
 				}}
 			/>
 
-			{subRoute === 'subs' ? (
-				<Subs {...{
+			{subRoute === 'stats' ? (
+				<GameStats {...{
 					subs,
 					players,
 					clockTime,
