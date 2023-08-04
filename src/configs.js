@@ -26,6 +26,11 @@ export const DEFAULTS = {
 	gameConfig: GAMECONFIG_DEFAULTS,
 };
 
+// if you make a sub within this many seconds of a 
+// suggested sub time, we clear that sub time from 
+// the list.
+export const SUB_TIME_THRESHOLD = 30;
+
 
 export const getDefaults = (key) => {
 	if (!DEFAULTS[key]) throw new Error(`Unknown config key: ${key}`);

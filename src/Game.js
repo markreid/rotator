@@ -14,9 +14,7 @@ import {
 	calcChanges,
 } from "./util";
 
-import { getConfig, saveConfig, resetConfig } from "./configs";
-
-const SUB_TIME_THRESHOLD = 60;
+import { getConfig, saveConfig, resetConfig, SUB_TIME_THRESHOLD } from "./configs";
 
 const Game = () => {
 	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameConfig] =
@@ -122,6 +120,10 @@ const Game = () => {
 
 	const [on, setOn] = useState([]);
 	const [off, setOff] = useState([]);
+	const resetOnOff = () => {
+		setOn([]);
+		setOff([]);
+	};
 
 	// automatically select players for the next sub.
 	const autoSub = () => {
@@ -204,7 +206,7 @@ const Game = () => {
 	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
 	const timeOnField = changesOnField * subEvery;
 
-	const [containerClassName, setContainerClassName] = useState(false);
+	const [containerClassName, setContainerClassName] = useState("");
 	const setContainerClass = (className) =>
 		setContainerClassName(
 			className === containerClassName ? "" : className
@@ -245,13 +247,19 @@ const Game = () => {
 					</button>
 				) : (
 					<button
-						className="Sub-Button-button makesub"
-						disabled={on.length !== off.length}
-						onClick={makeSub}
+						className="Sub-Button-button clear"
+						onClick={resetOnOff}
 					>
-						Make Sub
+						Clear
 					</button>
 				)}
+				<button
+					className="Sub-Button-button makesub"
+					disabled={!on.length || on.length !== off.length}
+					onClick={makeSub}
+				>
+					Make Sub
+				</button>
 			</div>
 
 			<div className={`PlayerList-titles ${containerClassName}`}>

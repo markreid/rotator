@@ -1,5 +1,8 @@
 .Sub-Button {
   width: 100%;
+  display: flex;
+  background: var(--c5);
+  padding: 1rem;
 }
 
 .Sub-Button-button {
@@ -10,16 +13,30 @@
   color: white;
   background: var(--c4);
   border: none;
+  border-radius: 4px;
+  flex: 1 1 0;
+}
+
+.Sub-Button-button[disabled], .Sub-Button-button[disabled]:active {
+  opacity: 0.4;
+}
+
+.Sub-Button-button + .Sub-Button-button {
+  margin-left: 2rem;
+}
+
+.Sub-Button-button:active {
+  opacity: 0.8;
 }
 
 .Sub-Button-button.makesub {
   background: var(--c1);
 }
 
-.Sub-Button-button.makesub[disabled] {
-  opacity: 0.4;
-}
-
 .Sub-Button-button.autosub {
   background: var(--c4);
 }
+
+/** 
+ * linear-gradient(90deg, var(--c2) 0%, var(--c2) 50%, var(--c3) 50%) 
+ * **/
