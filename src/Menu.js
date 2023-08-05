@@ -57,10 +57,13 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 						<MenuDivider title="Game" />
 						<MenuItem link="Game" navigate={openLink} />
 
-						<MenuDivider title="Settings" />
+						<MenuDivider title="Game Settings" />
 						<MenuItem link="Players" navigate={openLink} />
 						<MenuItem link="Game Settings" navigate={openLink} />
 						<MenuItem link="Sub Settings" navigate={openLink} />
+
+						<MenuDivider title="App Settings" />
+						<MenuItem link="Sounds" navigate={openLink} />
 						<MenuItem link="Reset" navigate={openLink} />
 					</ul>
 				</>

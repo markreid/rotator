@@ -1,15 +1,9 @@
-/*.Menu {
-	height: 3rem;	
-	width: 2rem;
-	z-index: 9;	
-	position: absolute;
-	top: 0;
-	right: 3rem;
-	text-align: right;
-}*/
+.Menu {
+	height: 3rem; /* match .Menu-bar */ 
+}
 
 .Menu.visible {
-	background: white;
+	background: var(--c5);
 	height: auto;
 	width: 100%;
 	box-shadow: 0 5px 15px var(--c5);
@@ -24,12 +18,13 @@
 	height: 3rem;
 	line-height: 3rem;
 	padding: 0.5rem 0;
+	position: fixed;
+	z-index: 9;
 }
 
 .Menu.visible .Menu-bar {
 	border-bottom: 1px solid var(--c2);
-	height: 3rem;
-	line-height: 3rem;
+	padding: 0;
 }
 
 .Menu-subroute-button {
@@ -77,9 +72,10 @@
 }
 
 .Menu-list {
+	margin: 0;
+	margin-top: 3rem; /* match .Menu-bar height */
 	text-align: right;
 	list-style: none;
-	margin: 0;
 	padding: 0;
 }
 

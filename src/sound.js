@@ -1,22 +1,30 @@
-import { Howl } from 'howler';
+import AlertSimple from './sounds/alert_simple.mp3';
+import AlertHighIntensity from './sounds/alert_high-intensity.mp3';
+import RingtoneMinimal from './sounds/ringtone_minimal.mp3';
+import StateChangeConfirmUp from './sounds/state-change_confirm-up.mp3';
 
 export const SOUNDS = {
-	nextSubReady: 'alert_simple.wav',
-	nextSubSoon: 'alert_high-intensity.wav',
-	periodFinished: 'ringtone_minimal.wav',
-	clockStart: 'state-change_confirm-up.wav',
-	clockStop: 'state-change_confirm-down.wav',
-	resetClock: 'alert_error-02.wav',
-	makeSub: 'navigation_forward-selection-minimal.wav',
+	nextSubReady: AlertSimple,
+	nextSubSoon: AlertHighIntensity,
+	periodFinished: RingtoneMinimal,
+	clockStart: StateChangeConfirmUp,	
 };
 
-const howls = Object.keys(SOUNDS).reduce((acc, sound) => ({
-	...acc,
-	[sound]: new Howl({
-		src: [`sounds/${SOUNDS[sound]}`]
-	}),
-}), {});
+const audioElement = new Audio();
 
-export const playSound = (sound) => howls[sound].play();
+export const playSound = (sound) => {
+	// no sound, do nothing
+	if (!SOUNDS[sound]) return null;
+
+	audioElement.src = SOUNDS[sound];
 	
-export const stopSound = (sound) => howls[sound].stop();
+	try {
+		audioElement.play();
+	} catch (err) {
+		// do nothing
+	}
+}
+
+export const stopSound = () => audioElement.pause();
+
+
