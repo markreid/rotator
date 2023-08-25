@@ -1,7 +1,6 @@
 import { useState } from "react";
 
-
-import { resetAll } from './configs';
+import { resetAll } from "./configs";
 
 const reset = () => {
 	resetAll();
@@ -13,9 +12,12 @@ const ResetButton = () => {
 
 	return (
 		<div className="BigButtons">
-			<button className="BigButtons-button"
-				onClick={()=> document.location.reload()}
-				>RESTART</button>
+			<button
+				className="BigButtons-button"
+				onClick={() => document.location.reload()}
+			>
+				RESTART
+			</button>
 			<button
 				disabled={hasReset}
 				className="BigButtons-button dangerous"
@@ -25,7 +27,7 @@ const ResetButton = () => {
 				}}
 			>
 				RESET ALL SETTINGS
-			</button>			
+			</button>
 		</div>
 	);
 };

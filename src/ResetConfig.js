@@ -27,11 +27,19 @@ const ResetConfig = () => {
 					className="BigButtons-button alt"
 					disabled={!workerWaiting}
 					onClick={() => {
-						workerWaiting.postMessage({ type: "SKIP_WAITING " });
-						// is this the right event to wait for?
-						navigator.serviceWorker.ready.then(() => {
-							// document.location.reload();
-						});
+						navigator.serviceWorker
+							.getRegistration()
+							.then((reg) => {
+								reg.waiting.postMessage({
+									type: "SKIP_WAITING",
+								});
+
+								setWorkerWaiting(false);
+
+								// not sure if we need to wait here because
+								// the postMessage is _probably_ async?
+								document.location.reload();
+							});
 					}}
 				>
 					{workerWaiting === false && "Checking for updates"}
