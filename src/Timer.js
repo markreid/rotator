@@ -14,27 +14,31 @@ const Timer = ({
 	numPeriods,
 }) => {
 	// we could hide the buttons by default so you don't push them by mistake
-	const [showButtons] = useState(true);
+	const [showButtons, setShowButtons] = useState(true);
 
 	return (
 		<div className="Timer">
 			<div className="Timer-face">
-			<button onClick={stopSound} className="Timer-face-clock">
+			<button onClick={() => {
+				stopSound();
+				setShowButtons(!showButtons);
+			}} className="Timer-face-clock">
 				{formatClock(periodLengthSeconds - clockTime)}				
 			</button>
 			<p className="Timer-face-periods">{currentPeriod} / {numPeriods}</p>
 			</div>
 
-			{showButtons ? (
-				<div className="Timer-buttons">
-					<button className="Timer-button" onClick={toggleClock}>
+				<div className={`Timer-buttons ${showButtons ? '' : 'hidden'}`}>
+					<button className="Timer-button" onClick={() => {
+						if (!clockRunning) setShowButtons(false);
+						toggleClock();
+					}}>
 						{clockRunning ? "⏸" : "▶️"}
 					</button>
 					<button className="Timer-button" onClick={resetClock}>
 						🔁
 					</button>
 				</div>
-			) : null}
 		</div>
 	);
 };
