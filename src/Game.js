@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import "./Game.css";
 
 import Timer from "./Timer";
 import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
-import GameStats from './GameStats';
+import GameStats from "./GameStats";
 
 import {
 	minutesToSeconds,
 	calcSubTimes,
 	calcPlayerTimesFromSubs,
 	calcClockSeconds,
-	calcChanges,
+	calculateSubsPlan,
 } from "./util";
 
 import { playSound } from "./sound";
@@ -25,73 +25,51 @@ import {
 	NEXT_SUB_WARNING,
 } from "./configs";
 
-const Game = ({ subRoute}) => {
-	const [{ numPlayersOn, periodLengthMinutes, numPeriods }, setGameConfig] =
-		useState({});
-	const [ready, setReady] = useState(false);
-	const [players, setPlayers] = useState([]);
-	const [{ playersPerSub, subMultiplier }, setSubConfig] = useState({});
-	const [subTimes, setSubTimes] = useState([]);
-
-	const [subs, setSubs] = useState(getConfig("subs"));
-
-	const [resetTrigger, setResetTrigger] = useState(Math.random());
-	const reset = () => setResetTrigger(Math.random());
-
-	useEffect(() => {
-		const savedPlayers = getConfig("players");
-		const savedSubsConfig = getConfig("subsConfig");
-		const savedGameConfig = getConfig("gameConfig");
-
-		setPlayers(savedPlayers);
-		setSubConfig(savedSubsConfig);
-		setGameConfig(savedGameConfig);
-
-		// you could put this in its own effect
-		setSubTimes(
-			calcSubTimes(savedGameConfig, savedSubsConfig, savedPlayers)
-		);
-		setReady(true);
-
-	}, [resetTrigger]);
-
-	// game state
-	const currentPeriod = 1;
-	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
-
-	const [clock, setClock] = useState(getConfig("clock"));
-	const [clockTime, setClockTime] = useState(
-		// todo - i think replace this with the clock var from above
-		calcClockSeconds(getConfig("clock"))
+const Game = ({ subRoute }) => {
+	// game state - might be more readable to use a reducer?
+	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
+	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
+	const [players, setPlayers] = useState(() => getConfig("players"));
+	const [subs, setSubs] = useState(() => getConfig("subs"));
+	const [clock, setClock] = useState(() => getConfig("clock"));
+	const [clockTime, setClockTime] = useState(calcClockSeconds(clock));
+	const [subTimes, setSubTimes] = useState(
+		calcSubTimes(gameConfig, subsConfig, players),
 	);
 
-	// update our game clock every second while the clock is running.
-	// tick tock.
+	const { periodLengthMinutes, numPlayersOn, numPeriods } = gameConfig;
+	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
+
+	// update the game clock once a second, if it's running.
+	// use this effect to trigger things (sounds, game events)
+	// based on the timer.
 	useEffect(() => {
 		if (!clock.clockRunning) return;
 
 		const timer = setInterval(() => {
-			const ct = calcClockSeconds(clock);
-			setClockTime(ct);
+			const newClockTime = calcClockSeconds(clock);
+			setClockTime(newClockTime);
 
 			// next sub coming up
-			if (subTimes.includes(ct + NEXT_SUB_WARNING)) {
+			if (subTimes.includes(newClockTime + NEXT_SUB_WARNING)) {
 				playSound("nextSubSoon");
 			}
 
 			// next sub!
-			if (subTimes.includes(ct)) {
+			if (subTimes.includes(newClockTime)) {
 				playSound("nextSubReady");
 			}
 
 			// period finshed
-			if (ct >= periodLengthSeconds) {
+			if (newClockTime >= periodLengthSeconds) {
 				stopClock();
 				playSound("periodFinished");
 			}
 		}, 1000);
 		return () => clearInterval(timer);
-	}, [clock, periodLengthSeconds]);
+	}, [clock, periodLengthSeconds, subTimes]);
+
+	const currentPeriod = 1;
 
 	const startClock = () => {
 		const oldClock = getConfig("clock");
@@ -136,8 +114,7 @@ const Game = ({ subRoute}) => {
 	const resetClock = () => {
 		setClockTime(0);
 		resetSubs();
-		setClock(resetConfig("clock"));
-		reset();
+		resetConfig("clock");
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
@@ -149,6 +126,18 @@ const Game = ({ subRoute}) => {
 		setOn([]);
 		setOff([]);
 	};
+
+	const subsPlan = useMemo(
+		() => calculateSubsPlan(players.length, gameConfig, subsConfig),
+		[players.length, gameConfig, subsConfig],
+	);
+	const {
+		playersPerSub,
+		playerSecondsEach,
+		benchSecondsEach,
+		timeOnBench,
+		timeOnField,
+	} = subsPlan;
 
 	// automatically select players for the next sub.
 	const autoSub = () => {
@@ -183,7 +172,7 @@ const Game = ({ subRoute}) => {
 			players
 				.slice(numPlayersOn)
 				.filter((player) => !on.includes(player)),
-			off
+			off,
 		);
 
 		setPlayers(subbedPlayers);
@@ -213,30 +202,9 @@ const Game = ({ subRoute}) => {
 		playSound("makeSub");
 	};
 
-	// todo - this logic is duplicate in subConfig
-	// break it into a util
-	// but also don't run it every render
-	const numPlayers = players.length;
-	const numPlayersOff = numPlayers - numPlayersOn;
-	const playerSecondsEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
-	const benchSecondsEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
-	const changesOnBench = Math.ceil(numPlayersOff / playersPerSub);
-	const numChanges = calcChanges(
-		numPlayersOn,
-		numPlayers,
-		playersPerSub,
-		subMultiplier
-	);
-	const subEvery = periodLengthSeconds / (numChanges + 1);
-	const timeOnBench = changesOnBench * subEvery;
-	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
-	const timeOnField = changesOnField * subEvery;
-
-	if (!ready) return null;
-
 	const timeOn = calcPlayerTimesFromSubs(players, subs, clockTime);
 
-	return !ready ? null : (
+	return (
 		<div className="Game">
 			<Timer
 				{...{
@@ -250,7 +218,6 @@ const Game = ({ subRoute}) => {
 				}}
 			/>
 
-
 			<NextSub
 				{...{
 					subTimes,
@@ -258,83 +225,80 @@ const Game = ({ subRoute}) => {
 				}}
 			/>
 
-			{subRoute === 'stats' ? (
-				<GameStats {...{
-					subs,
-					players,
-					clockTime,
-					numPlayersOn,
-					playerSecondsEach,
-					benchSecondsEach,
-					timeOnBench,
-					timeOnField,
-					timeOn,
-				}} />
+			{subRoute === "stats" ? (
+				<GameStats
+					{...{
+						subs,
+						players,
+						clockTime,
+						numPlayersOn,
+						playerSecondsEach,
+						benchSecondsEach,
+						timeOnBench,
+						timeOnField,
+						timeOn,
+					}}
+				/>
 			) : (
-			<>
-			<div className="Sub-Button">
-				{!on.length && !off.length ? (
-					<button
-						className="Sub-Button-button autosub"
-						onClick={autoSub}
-					>
-						Auto Sub
-					</button>
-				) : (
-					<button
-						className="Sub-Button-button clear"
-						onClick={resetOnOff}
-					>
-						Clear
-					</button>
-				)}
-				<button
-					className="Sub-Button-button makesub"
-					disabled={!on.length || on.length !== off.length}
-					onClick={makeSub}
-				>
-					Make Sub
-				</button>
-			</div>
+				<>
+					<div className="Sub-Button">
+						{!on.length && !off.length ? (
+							<button
+								className="Sub-Button-button autosub"
+								onClick={autoSub}
+							>
+								Auto Sub
+							</button>
+						) : (
+							<button
+								className="Sub-Button-button clear"
+								onClick={resetOnOff}
+							>
+								Clear
+							</button>
+						)}
+						<button
+							className="Sub-Button-button makesub"
+							disabled={!on.length || on.length !== off.length}
+							onClick={makeSub}
+						>
+							Make Sub
+						</button>
+					</div>
 
-			<div className="PlayerList-titles">
-				<h2 className="PlayerList-title on">Field</h2>
-				<h2 className="PlayerList-title off">Bench</h2>
-			</div>
+					<div className="PlayerList-titles">
+						<h2 className="PlayerList-title on">Field</h2>
+						<h2 className="PlayerList-title off">Bench</h2>
+					</div>
 
-			<div className="PlayerList-container">
-				<PlayerList
-					{...{
-						players: playersOnField,
-						variant: "on",
-						className: "field",
-						selected: off,
-						select: select(off, setOff),
-						timeOn,
-						targetTimeOn: timeOnField,
-						clockTime,
-					}}
-				/>
-				<PlayerList
-					{...{
-						players: playersOnBench,
-						variant: "off",
-						className: "bench",
-						selected: on,
-						select: select(on, setOn),
-						timeOn,
-						targetTimeOn: timeOnBench,
-						clockTime,
-					}}
-				/>
-			</div>
-			</>
-
+					<div className="PlayerList-container">
+						<PlayerList
+							{...{
+								players: playersOnField,
+								variant: "on",
+								className: "field",
+								selected: off,
+								select: select(off, setOff),
+								timeOn,
+								targetTimeOn: timeOnField,
+								clockTime,
+							}}
+						/>
+						<PlayerList
+							{...{
+								players: playersOnBench,
+								variant: "off",
+								className: "bench",
+								selected: on,
+								select: select(on, setOn),
+								timeOn,
+								targetTimeOn: timeOnBench,
+								clockTime,
+							}}
+						/>
+					</div>
+				</>
 			)}
-
-			
-
-			
 		</div>
 	);
 };

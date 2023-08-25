@@ -1,60 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 import "./SubConfig.css";
-import {
-	pluralise,
-	minutesToSeconds,
-	calcChanges,
-	formatClock,
-} from "./util";
+import { pluralise, formatClock, calculateSubsPlan } from "./util";
 
-import { getConfig, saveConfig } from'./configs';
+import { getConfig, saveConfig } from "./configs";
 
 import NumericInput from "./NumericInput";
 
-
 const SubConfig = ({ navigateTo }) => {
-	const [players, setPlayers] = useState(null);
-	const [gameConfig, setGameConfig] = useState(null);
-	const [playersPerSub, setPlayersPerSub] = useState(null);
-	const [subMultiplier, setSubMultiplier] = useState(null);
+	// const [resetTrigger, setResetTrigger] = useState(Math.random());
+	// const resetFromSaved = () => setResetTrigger(Math.random());
 
-	const [ready, setReady] = useState(false);
-	const [resetTrigger, setResetTrigger] = useState(Math.random());
-	const resetFromSaved = () => setResetTrigger(Math.random());
+	const players = useMemo(() => getConfig("players"), []);
+	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
+	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
+
+	const [playersPerSub, setPlayersPerSub] = useState(
+		subsConfig.playersPerSub,
+	);
+	const [subMultiplier, setSubMultiplier] = useState(
+		subsConfig.subMultiplier,
+	);
 	const [hasChanged, setHasChanged] = useState(false);
 
-	useEffect(() => {
-		const subConfig = getConfig('subsConfig');
-		setPlayersPerSub(subConfig.playersPerSub);
-		setSubMultiplier(subConfig.subMultiplier);
-			
-		setPlayers(getConfig('players'));
-		setGameConfig(getConfig('gameConfig'));
+	const subsPlan = useMemo(
+		() =>
+			calculateSubsPlan(players.length, gameConfig, {
+				playersPerSub,
+				subMultiplier,
+			}),
+		[players.length, gameConfig, playersPerSub, subMultiplier],
+	);
 
-		setReady(true);
+	const resetFromSaved = () => {
+		setPlayersPerSub(subsConfig.playersPerSub);
+		setSubMultiplier(subsConfig.subMultiplier);
 		setHasChanged(false);
-	}, [resetTrigger]);
+	};
 
-	if (!ready) return null;
 
-	// lots of complicated derived state below
-	const { numPlayersOn } = gameConfig;
-	const periodLengthSeconds = minutesToSeconds(gameConfig.periodLengthMinutes);
-	const numPlayers = players.length;
-	const numPlayersOff = numPlayers - numPlayersOn;
-
-	const playerMinutesEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
-	const benchMinutesEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
-
-	const numChanges = calcChanges(numPlayersOn, numPlayers, playersPerSub, subMultiplier);
-	const subEvery = periodLengthSeconds / (numChanges + 1);
-
-	// how long a player spends on/off in total
-	const changesOnBench = Math.ceil(numPlayersOff / playersPerSub);
-	const timeOnBench = changesOnBench * subEvery;
-	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
-	const timeOnField = changesOnField * subEvery;
+	const {
+		numChanges,
+		numPlayers,
+		numPlayersOn,
+		subEvery,
+		timeOnField,
+		timeOnBench,
+		playerSecondsEach,
+		benchSecondsEach,
+	} = subsPlan;
 
 	const saveToConfig = () => {
 		saveConfig("subsConfig", {
@@ -65,18 +59,17 @@ const SubConfig = ({ navigateTo }) => {
 		resetFromSaved();
 	};
 
-	
 	// call a state setter function and flag hasChanged as true
 	const changeAndSet = (setter) => (val) => {
 		setter(val);
 		setHasChanged(true);
-	}
+	};
 
 	return (
 		<div className="SubConfig page">
 			<div className="page-title">Subs Settings</div>
 
-			{ready && numChanges !== 0 && (
+			{numChanges !== 0 && (
 				<>
 					<ul className="GameConfig-list">
 						<li className="GameConfig-list-item">
@@ -105,8 +98,8 @@ const SubConfig = ({ navigateTo }) => {
 
 					<p className="GameConfig-summary">
 						<b>{pluralise(playersPerSub, "player")}</b> every{" "}
-						<b>{formatClock(subEvery)}</b> (<b>{pluralise(numChanges, 'sub')}</b> per
-						period.)
+						<b>{formatClock(subEvery)}</b> (
+						<b>{pluralise(numChanges, "sub")}</b> per period.)
 					</p>
 
 					<p className="GameConfig-summary">
@@ -116,8 +109,8 @@ const SubConfig = ({ navigateTo }) => {
 
 					<p className="GameConfig-summary">
 						In total, each player gets{" "}
-						<b>{formatClock(playerMinutesEach)} on</b> and{" "}
-						<b>{formatClock(benchMinutesEach)} off</b>.
+						<b>{formatClock(playerSecondsEach)} on</b> and{" "}
+						<b>{formatClock(benchSecondsEach)} off</b>.
 					</p>
 
 					<div className="BigButtons">
@@ -139,17 +132,32 @@ const SubConfig = ({ navigateTo }) => {
 				</>
 			)}
 
-			{ready && numChanges === 0 && (<>
-				<p className="GameConfig-summary">You don't have enough players to make subs.</p>
-				<p className="GameConfig-summary">You may need to update your players or change the game settings.</p>
+			{numChanges === 0 && (
+				<>
+					<p className="GameConfig-summary">
+						You don't have enough players to make subs.
+					</p>
+					<p className="GameConfig-summary">
+						You may need to update your players or change the game
+						settings.
+					</p>
 
-				<div className="BigButtons">
-					<button onClick={() => navigateTo('PLAYERS')} className="BigButtons-button">Edit Players</button>
-					<button onClick={() => navigateTo('GAME SETTINGS')} className="BigButtons-button alt">Configure Game</button>
-				</div>
-			</>)}
-
-			
+					<div className="BigButtons">
+						<button
+							onClick={() => navigateTo("PLAYERS")}
+							className="BigButtons-button"
+						>
+							Edit Players
+						</button>
+						<button
+							onClick={() => navigateTo("GAME SETTINGS")}
+							className="BigButtons-button alt"
+						>
+							Configure Game
+						</button>
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

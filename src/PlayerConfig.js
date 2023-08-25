@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { pluralise, shuffle } from "./util";
 import { getConfig, saveConfig } from "./configs";
@@ -6,20 +6,9 @@ import { getConfig, saveConfig } from "./configs";
 import "./PlayerConfig.css";
 
 const PlayerConfig = () => {
-	const [players, setPlayers] = useState(null);
-
+	const [players, setPlayers] = useState(() => getConfig("players"));
 	const [newPlayerName, setNewPlayerName] = useState("");
 	const [hasChanged, setHasChanged] = useState(false);
-	const [ready, setReady] = useState(false);
-
-	useEffect(() => {
-		setPlayers(getConfig("players"));
-		setReady(true);
-	}, []);
-
-	if (!ready) {
-		return null;
-	}
 
 	const submitHandler = (evt) => {
 		evt.preventDefault();
