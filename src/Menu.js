@@ -18,11 +18,12 @@ import "./Menu.css";
 
 import Lock from "./Lock";
 
-const Menu = ({ screen, navigateTo, route, subRoute }) => {
+const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 	const [visible, setVisible] = useState(false);
 
-	const openLink = (destination) => {
+	const openLink = (destination, sub = null) => {
 		navigateTo(destination);
+		setSubRoute(sub);
 		setVisible(false);
 	};
 
@@ -52,6 +53,9 @@ const Menu = ({ screen, navigateTo, route, subRoute }) => {
 				<List>
 					<ListItem>
 						<ListItemButton onClick={() => openLink('GAME')}>Game</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton onClick={() => openLink('GAME', 'stats')}>Stats</ListItemButton>
 					</ListItem>
 					<ListDivider />
 					<ListItem>
