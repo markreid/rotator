@@ -52,11 +52,11 @@
 }
 
 .ProgressBar.on {
-	background: var(--on);
+	background: var(--onlight);
 }
 
 .ProgressBar.on .ProgressBar-inner {
-	background: var(--ondark);
+	background: var(--on);
 }
 
 .ProgressBar.on .ProgressBar-inner-over {
@@ -68,16 +68,16 @@
 }
 
 .ProgressBar.off {
-	background: var(--off);
+	background: var(--offlight);
 }
 
 .ProgressBar.off .ProgressBar-inner {
-	background: var(--offdark);
+	background: var(--off);
 	opacity: 0.5;
 }
 
 .ProgressBar.off .ProgressBar-inner-over {
-	background: var(--c1);
+	background: var(--offdark);
 	opacity: 0.7;
 }
 

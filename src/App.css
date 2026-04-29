@@ -7,13 +7,13 @@
   --c5: rgb(29, 53, 87);
 
   
-  --offlight: rgb(255, 210, 210);
-  --off: rgb(255, 180, 180);
-  --offdark: rgb(200, 120, 120);
-  
-  --on: rgb(210, 255, 210);
-  --onlight: rgb(240, 255, 240);
-  --ondark: rgb(160, 200, 160);
+  --offlight: rgb(240, 210, 210);
+  --off: rgb(210, 150, 150);
+  --offdark: rgb(170, 95, 95);
+
+  --onlight: rgb(220, 237, 218);
+  --on: rgb(140, 190, 135);
+  --ondark: rgb(85, 140, 80);
 
 
 }
