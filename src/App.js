@@ -7,7 +7,7 @@ import Menu from "./Menu";
 import PlayerConfig from "./PlayerConfig";
 import GameConfig from "./GameConfig";
 import SubConfig from "./SubConfig";
-import ResetConfig from "./ResetConfig";
+import AppConfig, { getDevMode } from "./AppConfig";
 import Game from "./Game";
 import ErrorBoundary from "./ErrorBoundary";
 import Sounds from './Sounds';
@@ -15,8 +15,8 @@ import Palette from './Palette';
 
 const App = () => {
   const [route, navigateTo] = useState("GAME");
-
   const [subRoute, setSubRoute] = useState(null);
+  const [devMode, setDevMode] = useState(getDevMode);
 
   return (
     <div className="App">
@@ -26,11 +26,12 @@ const App = () => {
           route={route}
           subRoute={subRoute}
           setSubRoute={setSubRoute}
+          devMode={devMode}
         />
         {route === "PLAYERS" && <PlayerConfig />}
         {route === "GAME SETTINGS" && <GameConfig />}
         {route === "SUB SETTINGS" && <SubConfig navigateTo={navigateTo} />}
-        {route === "RESET" && <ResetConfig />}
+        {route === "APPCONFIG" && <AppConfig onDevModeChange={setDevMode} />}
         {route === "GAME" && <Game subRoute={subRoute} setSubRoute={setSubRoute} />}
         {route === "SOUNDS" && <Sounds />}
         {route === "PALETTE" && <Palette />}

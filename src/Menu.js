@@ -18,7 +18,7 @@ import "./Menu.css";
 
 import Lock from "./Lock";
 
-const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
+const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute, devMode }) => {
 	const [visible, setVisible] = useState(false);
 
 	const openLink = (destination, sub = null) => {
@@ -69,14 +69,19 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 					</ListItem>
 					<ListDivider />
 					<ListItem>
-						<ListItemButton onClick={() => openLink('SOUNDS')}>Test Sounds</ListItemButton>
+						<ListItemButton onClick={() => openLink('APPCONFIG')}>App Config</ListItemButton>
 					</ListItem>
-					<ListItem>
-						<ListItemButton onClick={() => openLink('PALETTE')}>Palette</ListItemButton>
-					</ListItem>
-					<ListItem>
-						<ListItemButton onClick={() => openLink('RESET')}>Reset App</ListItemButton>
-					</ListItem>
+					{devMode && (
+						<>
+							<ListDivider />
+							<ListItem>
+								<ListItemButton onClick={() => openLink('SOUNDS')}>Test Sounds</ListItemButton>
+							</ListItem>
+							<ListItem>
+								<ListItemButton onClick={() => openLink('PALETTE')}>Palette</ListItemButton>
+							</ListItem>
+						</>
+					)}
 				</List>
 			</Drawer>
 
