@@ -4,14 +4,11 @@ import "./NextSub.css";
 
 import { formatClock } from "./util";
 
-const NextSub = ({
-	clockTime,
-	subTimes,
-}) => {
+const NextSub = ({ clockTime, subTimes }) => {
 	const [expanded, setExpanded] = useState(false);
 
 	return (
-		<div className={`NextSub ${expanded ? 'expanded' : ''}`}>
+		<div className={`NextSub ${expanded ? "expanded" : ""}`}>
 			<h3 className="NextSub-title">Next sub:</h3>
 			<ul className="NextSub-list">
 				{subTimes.slice(0, 3).map((time) => (

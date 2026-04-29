@@ -1,25 +1,24 @@
 import { useState } from "react";
 
+import Box from '@mui/joy/Box';
+import IconButton from '@mui/joy/IconButton';
+import Button from '@mui/joy/Button';
+import Drawer from '@mui/joy/Drawer';
+import List from '@mui/joy/List';
+import ListItem from '@mui/joy/ListItem';
+import ListItemButton from '@mui/joy/ListItemButton';
+import ListDivider from '@mui/joy/ListDivider';
+import Stack from '@mui/joy/Stack';
+import Sheet from '@mui/joy/Sheet';
+import { IoMenuSharp } from "react-icons/io5";
+
+
+
 import "./Menu.css";
 
 import Lock from "./Lock";
 
-const MenuItem = ({ link, navigate }) => (
-	<li className="Menu-list-item">
-		<button
-			className="Menu-button"
-			onClick={() => navigate(link.toUpperCase())}
-		>
-			{link}
-		</button>
-	</li>
-);
-
-const MenuDivider = ({ title }) => (
-	<li className="Menu-list-item Menu-divider">{title}</li>
-);
-
-const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
+const Menu = ({ screen, navigateTo, route, subRoute }) => {
 	const [visible, setVisible] = useState(false);
 
 	const openLink = (destination) => {
@@ -28,47 +27,53 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 	};
 
 	return (
-		<div className={`Menu ${visible ? "visible" : ""}`}>
-			<div className="Menu-bar">
-				{route === "GAME" && !visible && (
-					<>
-						<Lock />
-						<button
-							className="Menu-subroute-button"
-							onClick={() => setSubRoute(subRoute === 'stats' ? null : "stats")}
-						>
-							Mode
-						</button>
-					</>
-				)}
-				<h1 className="Menu-title">Rotator</h1>
+		<Sheet variant="soft">
+			<Stack
+				direction="row"
+				spacing={2}
+				sx={{
+					justifyContent: 'space-between',
+					alignItems: 'center',
+				}}
+			>
+				<Box>
+					<Lock />
+				</Box>
+				<Box>Rotator</Box>
+				<Box>
+					<IconButton 
+						variant="plain"
+						onClick={() => setVisible(!visible)}
+					><IoMenuSharp /></IconButton>
+				</Box>
+			</Stack>
 
-				<button
-					className="Menu-burger"
-					onClick={() => setVisible(!visible)}
-				>
-					⚙️
-				</button>
-			</div>
+			<Drawer anchor="right" open={visible} onClose={() => setVisible(false)}>
+				<List>
+					<ListItem>
+						<ListItemButton onClick={() => openLink('GAME')}>Game</ListItemButton>
+					</ListItem>
+					<ListDivider />
+					<ListItem>
+						<ListItemButton onClick={() => openLink('PLAYERS')}>Players</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton onClick={() => openLink('GAME SETTINGS')}>Game setup</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton onClick={() => openLink('SUB SETTINGS')}>Sub Setup</ListItemButton>
+					</ListItem>
+					<ListDivider />
+					<ListItem>
+						<ListItemButton onClick={() => openLink('SOUNDS')}>Test Sounds</ListItemButton>
+					</ListItem>
+					<ListItem>
+						<ListItemButton onClick={() => openLink('RESET')}>Reset App</ListItemButton>
+					</ListItem>
+				</List>
+			</Drawer>
 
-			{visible && (
-				<>
-					<ul className="Menu-list">
-						<MenuDivider title="Game" />
-						<MenuItem link="Game" navigate={openLink} />
-
-						<MenuDivider title="Game Settings" />
-						<MenuItem link="Players" navigate={openLink} />
-						<MenuItem link="Game Settings" navigate={openLink} />
-						<MenuItem link="Sub Settings" navigate={openLink} />
-
-						<MenuDivider title="App Settings" />
-						<MenuItem link="Sounds" navigate={openLink} />
-						<MenuItem link="Reset" navigate={openLink} />
-					</ul>
-				</>
-			)}
-		</div>
+		</Sheet>
 	);
 };
 

@@ -161,6 +161,7 @@ export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 		timeOnField,
 		timeOnBench,
 		playerSecondsEach,
+		playersPerSub,
 		benchSecondsEach,
 	};
 };

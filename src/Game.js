@@ -1,9 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 
+import Sheet from "@mui/joy/Sheet";
+import Grid from "@mui/joy/Grid";
+import Button from "@mui/joy/Button";
+
+
 import "./Game.css";
 
 import Timer from "./Timer";
-import NextSub from "./NextSub";
 import PlayerList from "./PlayerList";
 import GameStats from "./GameStats";
 
@@ -25,7 +29,7 @@ import {
 	NEXT_SUB_WARNING,
 } from "./configs";
 
-const Game = ({ subRoute }) => {
+const Game = ({ subRoute, setSubRoute }) => {
 	// game state - might be more readable to use a reducer?
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
@@ -215,16 +219,14 @@ const Game = ({ subRoute }) => {
 					clockRunning: clock.clockRunning,
 					toggleClock,
 					resetClock,
-				}}
-			/>
-
-			<NextSub
-				{...{
+					setSubRoute,
+					subRoute,
 					subTimes,
-					clockTime,
 				}}
+
 			/>
 
+			
 			{subRoute === "stats" ? (
 				<GameStats
 					{...{
@@ -241,62 +243,73 @@ const Game = ({ subRoute }) => {
 				/>
 			) : (
 				<>
-					<div className="Sub-Button">
-						{!on.length && !off.length ? (
-							<button
-								className="Sub-Button-button autosub"
-								onClick={autoSub}
-							>
-								Auto Sub
-							</button>
-						) : (
-							<button
-								className="Sub-Button-button clear"
-								onClick={resetOnOff}
-							>
-								Clear
-							</button>
-						)}
-						<button
-							className="Sub-Button-button makesub"
-							disabled={!on.length || on.length !== off.length}
-							onClick={makeSub}
+					<Sheet variant="soft">
+						<Grid
+							container
+							spacing={2}
+							sx={{
+								flexGrow: 1,
+								justifyContent: "space-around",
+							}}
 						>
-							Make Sub
-						</button>
-					</div>
+							<Grid xs={6}>
+								{!on.length && !off.length ? (
+									<Button onClick={autoSub}>Auto Sub</Button>
+								) : (
+									<Button
+										color="success"
+										disabled={
+											!on.length ||
+											on.length !== off.length
+										}
+										onClick={makeSub}
+									>
+										Make Sub
+									</Button>
+								)}
+							</Grid>
+							<Grid xs={6}>
+								<Button color="danger" disabled={!on.length && !off.length} onClick={resetOnOff}>
+									Clear
+								</Button>
+							</Grid>
+						</Grid>
+					</Sheet>
 
-					<div className="PlayerList-titles">
-						<h2 className="PlayerList-title on">Field</h2>
-						<h2 className="PlayerList-title off">Bench</h2>
-					</div>
-
-					<div className="PlayerList-container">
-						<PlayerList
-							{...{
-								players: playersOnField,
-								variant: "on",
-								className: "field",
-								selected: off,
-								select: select(off, setOff),
-								timeOn,
-								targetTimeOn: timeOnField,
-								clockTime,
-							}}
-						/>
-						<PlayerList
-							{...{
-								players: playersOnBench,
-								variant: "off",
-								className: "bench",
-								selected: on,
-								select: select(on, setOn),
-								timeOn,
-								targetTimeOn: timeOnBench,
-								clockTime,
-							}}
-						/>
-					</div>
+					<Grid
+						container
+						spacing={4}
+						sx={{ justifyContent: "space-between" }}
+					>
+						<Grid size={6}>
+							<PlayerList
+								{...{
+									players: playersOnField,
+									variant: "on",
+									className: "field",
+									selected: off,
+									select: select(off, setOff),
+									timeOn,
+									targetTimeOn: timeOnField,
+									clockTime,
+								}}
+							/>
+						</Grid>
+						<Grid size={6}>
+							<PlayerList
+								{...{
+									players: playersOnBench,
+									variant: "off",
+									className: "bench",
+									selected: on,
+									select: select(on, setOn),
+									timeOn,
+									targetTimeOn: timeOnBench,
+									clockTime,
+								}}
+							/>
+						</Grid>
+					</Grid>
 				</>
 			)}
 		</div>

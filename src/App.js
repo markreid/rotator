@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import '@fontsource/inter';
 
 import "./App.css";
 
@@ -29,7 +30,7 @@ const App = () => {
         {route === "GAME SETTINGS" && <GameConfig />}
         {route === "SUB SETTINGS" && <SubConfig navigateTo={navigateTo} />}
         {route === "RESET" && <ResetConfig />}
-        {route === "GAME" && <Game subRoute={subRoute} />}
+        {route === "GAME" && <Game subRoute={subRoute} setSubRoute={setSubRoute} />}
         {route === "SOUNDS" && <Sounds />}
       </ErrorBoundary>
     </div>

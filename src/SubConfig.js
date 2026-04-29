@@ -1,16 +1,22 @@
 import { useState, useMemo } from "react";
 
+import Sheet from "@mui/joy/Sheet";
+import Card from "@mui/joy/Card";
+import Typography from "@mui/joy/Typography";
+import Input from "@mui/joy/Input";
+import Button from "@mui/joy/Button";
+import IconButton from "@mui/joy/IconButton";
+import ButtonGroup from "@mui/joy/ButtonGroup";
+
 import "./SubConfig.css";
 import { pluralise, formatClock, calculateSubsPlan } from "./util";
 
 import { getConfig, saveConfig } from "./configs";
 
 import NumericInput from "./NumericInput";
+import SaveButtons from './SaveButtons';
 
 const SubConfig = ({ navigateTo }) => {
-	// const [resetTrigger, setResetTrigger] = useState(Math.random());
-	// const resetFromSaved = () => setResetTrigger(Math.random());
-
 	const players = useMemo(() => getConfig("players"), []);
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
@@ -32,7 +38,7 @@ const SubConfig = ({ navigateTo }) => {
 		[players.length, gameConfig, playersPerSub, subMultiplier],
 	);
 
-	const resetFromSaved = () => {
+	const reset = () => {
 		setPlayersPerSub(subsConfig.playersPerSub);
 		setSubMultiplier(subsConfig.subMultiplier);
 		setHasChanged(false);
@@ -50,13 +56,13 @@ const SubConfig = ({ navigateTo }) => {
 		benchSecondsEach,
 	} = subsPlan;
 
-	const saveToConfig = () => {
+	const save = () => {
 		saveConfig("subsConfig", {
 			playersPerSub,
 			subMultiplier,
 		});
 		setHasChanged(false);
-		resetFromSaved();
+		// reset();
 	};
 
 	// call a state setter function and flag hasChanged as true
@@ -66,8 +72,10 @@ const SubConfig = ({ navigateTo }) => {
 	};
 
 	return (
-		<div className="SubConfig page">
-			<div className="page-title">Subs Settings</div>
+		<Sheet>
+		<Card variant="plain">
+		<Typography level="h1">Subs Setup</Typography>
+		</Card>		
 
 			{numChanges !== 0 && (
 				<>
@@ -113,22 +121,8 @@ const SubConfig = ({ navigateTo }) => {
 						<b>{formatClock(benchSecondsEach)} off</b>.
 					</p>
 
-					<div className="BigButtons">
-						<button
-							className="BigButtons-button"
-							onClick={saveToConfig}
-							disabled={!hasChanged}
-						>
-							SAVE
-						</button>
-						<button
-							className="BigButtons-button dangerous"
-							onClick={resetFromSaved}
-							disabled={!hasChanged}
-						>
-							RESET
-						</button>
-					</div>
+					
+					<SaveButtons {...{hasChanged, save, reset }} />					
 				</>
 			)}
 
@@ -158,7 +152,7 @@ const SubConfig = ({ navigateTo }) => {
 					</div>
 				</>
 			)}
-		</div>
+	</Sheet>
 	);
 };
 
