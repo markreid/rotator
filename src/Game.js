@@ -224,8 +224,10 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		);
 	}
 
+	const devMode = getDevMode();
+
 	return (
-		<div className="Game">
+		<div className="Game" style={devMode ? { paddingBottom: '48px' } : {}}>
 			<Timer
 				{...{
 					clockTime,
@@ -309,6 +311,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									select: select(off, setOff),
 									timeOn,
 									targetTimeOn: timeOnField,
+									targetTotalTime: playerSecondsEach,
 									clockTime,
 								}}
 							/>
@@ -323,6 +326,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									select: select(on, setOn),
 									timeOn,
 									targetTimeOn: timeOnBench,
+									targetTotalTime: benchSecondsEach,
 									clockTime,
 								}}
 							/>
@@ -331,7 +335,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 				</>
 			)}
 
-			{getDevMode() && (
+			{devMode && (
 				<AccordionGroup sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', boxShadow: '0 -2px 8px rgba(0,0,0,0.15)', borderTop: '1px solid #ccc' }}>
 					<Accordion>
 						<AccordionSummary>Debug State</AccordionSummary>

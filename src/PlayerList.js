@@ -8,9 +8,12 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import ListDivider from '@mui/joy/ListDivider';
 import { IoArrowForward, IoArrowBack } from 'react-icons/io5';
 
+import { getDevMode } from './AppConfig';
 
 
-const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, clockTime}) => {
+
+const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, targetTotalTime, clockTime}) => {
+	const devMode = getDevMode();
 
 	
 	const timeOnReference = variant === 'on' ? 'lastOn' : 'lastOff';
@@ -23,7 +26,11 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 				<ListDivider />
 				{players.map((player) => {
 					const isSelected = selected.includes(player);
-					const percentage = Math.round(((clockTime - timeOn[player][timeOnReference]) / targetTimeOn) * 100);
+					
+					// calculate the % of the current sub for this player
+					const percentageThisSub = Math.round(((clockTime - timeOn[player][timeOnReference]) / targetTimeOn) * 100);
+					const totalTimeKey = variant === 'on' ? 'on' : 'off';
+					const percentageTotal = Math.round((timeOn[player][totalTimeKey] / targetTotalTime) * 100);					
 					return (
 					<ListItem key={player} sx={{ paddingRight: '1px' }}>
 						<ListItemButton
@@ -38,11 +45,9 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 								} : {}),
 							}}
 						>
-						<span style={{ flex: 1 }}>{player}</span>
-						{percentage > 100 && (variant === 'on' ? <IoArrowForward color="var(--off)" /> : <IoArrowBack color="var(--on)" />)}
+						<span style={{ flex: 1 }}>{player}{devMode && <span style={{ color: '#aaa', marginLeft: '4px', fontSize: '0.8em' }}>{percentageThisSub}% - {percentageTotal}%</span>}</span>
+						{percentageThisSub > 100 && (variant === 'on' ? <IoArrowForward color="var(--off)" /> : <IoArrowBack color="var(--on)" />)}
 						</ListItemButton>						
-						
-						{/*<LinearProgress determinate value={percentage} />*/}
 						
 						<ProgressBar
 								variant={`${variant} slim`}
