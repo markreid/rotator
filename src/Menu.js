@@ -72,6 +72,9 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute }) => {
 						<ListItemButton onClick={() => openLink('SOUNDS')}>Test Sounds</ListItemButton>
 					</ListItem>
 					<ListItem>
+						<ListItemButton onClick={() => openLink('PALETTE')}>Palette</ListItemButton>
+					</ListItem>
+					<ListItem>
 						<ListItemButton onClick={() => openLink('RESET')}>Reset App</ListItemButton>
 					</ListItem>
 				</List>

@@ -11,6 +11,7 @@ import ResetConfig from "./ResetConfig";
 import Game from "./Game";
 import ErrorBoundary from "./ErrorBoundary";
 import Sounds from './Sounds';
+import Palette from './Palette';
 
 const App = () => {
   const [route, navigateTo] = useState("GAME");
@@ -32,6 +33,7 @@ const App = () => {
         {route === "RESET" && <ResetConfig />}
         {route === "GAME" && <Game subRoute={subRoute} setSubRoute={setSubRoute} />}
         {route === "SOUNDS" && <Sounds />}
+        {route === "PALETTE" && <Palette />}
       </ErrorBoundary>
     </div>
   );
