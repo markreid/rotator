@@ -6,7 +6,7 @@ import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListDivider from '@mui/joy/ListDivider';
-import { IoWarning } from 'react-icons/io5';
+import { IoArrowForward, IoArrowBack } from 'react-icons/io5';
 
 
 
@@ -39,7 +39,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 							}}
 						>
 						<span style={{ flex: 1 }}>{player}</span>
-						{percentage > 100 && <IoWarning color="var(--c4)" />}
+						{percentage > 100 && (variant === 'on' ? <IoArrowForward color="var(--off)" /> : <IoArrowBack color="var(--on)" />)}
 						</ListItemButton>						
 						
 						{/*<LinearProgress determinate value={percentage} />*/}
@@ -52,35 +52,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 					</ListItem>
 					);
 				})}
-			</List>
-
-			{/* }
-			<ul className="PlayerList-list">
-				{players.map((player) => {
-					const isSelected = selected.includes(player);
-					return (
-						<li
-							key={player}
-							className={`PlayerList-list-item ${
-								isSelected ? "selected" : ""
-							}`}
-						>
-							<button
-								className="PlayerList-list-item-button"
-								onClick={() => select(player)}
-							>
-								{player}
-							</button>
-							<ProgressBar
-								variant={`${variant} slim`}
-								val={clockTime - timeOn[player][timeOnReference]}
-								target={targetTimeOn}
-							/>
-						</li>
-					);
-				})}
-			</ul>
-			*/}
+			</List>			
 		</div>
 	);
 };
