@@ -32,7 +32,7 @@ const App = () => {
         {route === "GAME SETTINGS" && <GameConfig />}
         {route === "SUB SETTINGS" && <SubConfig navigateTo={navigateTo} />}
         {route === "APPCONFIG" && <AppConfig onDevModeChange={setDevMode} />}
-        {route === "GAME" && <Game subRoute={subRoute} setSubRoute={setSubRoute} />}
+        {route === "GAME" && <Game subRoute={subRoute} setSubRoute={setSubRoute} navigateTo={navigateTo} />}
         {route === "SOUNDS" && <Sounds />}
         {route === "PALETTE" && <Palette />}
       </ErrorBoundary>

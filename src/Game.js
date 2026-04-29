@@ -10,6 +10,7 @@ import "./Game.css";
 import Timer from "./Timer";
 import PlayerList from "./PlayerList";
 import GameStats from "./GameStats";
+import NotEnoughPlayers from "./NotEnoughPlayers";
 
 import {
 	minutesToSeconds,
@@ -30,7 +31,7 @@ import {
 	NEXT_SUB_WARNING,
 } from "./configs";
 
-const Game = ({ subRoute, setSubRoute }) => {
+const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	// game state - might be more readable to use a reducer?
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
@@ -208,6 +209,14 @@ const Game = ({ subRoute, setSubRoute }) => {
 	};
 
 	const timeOn = calcPlayerTimesFromSubs(players, subs, clockTime);
+
+	if (players.length < numPlayersOn) {
+		return (
+			<div className="Game">
+				<NotEnoughPlayers navigateTo={navigateTo} />
+			</div>
+		);
+	}
 
 	return (
 		<div className="Game">

@@ -10,6 +10,7 @@ const NumericInput = ({
 	min = 1,
 	max = 10000,
 	readonly,
+	disabled,
 }) => {
 	return (
 		<Input
@@ -47,6 +48,7 @@ const NumericInput = ({
 			value={displayValue === void 0 ? value : displayValue}
 			onChange={(evt) => onChange(evt.target.value)}
 			readOnly={!!readonly}
+			disabled={!!disabled}
 			size="lg"
 			sx={{textAlign:'center'}}
 		/>

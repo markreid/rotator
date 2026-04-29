@@ -66,7 +66,7 @@ const Timer = ({
 							textAlign: 'right'
 						}}>Next Sub</Typography>
 						<Typography level="h1" sx={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
-							{formatClock(subTimes[0] - clockTime)}
+							{subTimes.length ? formatClock(subTimes[0] - clockTime) : "N/A"}
 						</Typography>
 					</Grid>
 				</Grid>

@@ -15,6 +15,7 @@ import { getConfig, saveConfig, getActivePlayers } from "./configs";
 
 import NumericInput from "./NumericInput";
 import SaveButtons from './SaveButtons';
+import NotEnoughPlayers from './NotEnoughPlayers';
 
 const SubConfig = ({ navigateTo }) => {
 	const players = useMemo(() => getActivePlayers(), []);
@@ -56,6 +57,8 @@ const SubConfig = ({ navigateTo }) => {
 		benchSecondsEach,
 	} = subsPlan;
 
+	const noSubs = players.length <= numPlayersOn;
+
 	const save = () => {
 		saveConfig("subsConfig", {
 			playersPerSub,
@@ -77,16 +80,17 @@ const SubConfig = ({ navigateTo }) => {
 		<Typography level="h1">Subs Setup</Typography>
 		</Card>		
 
-			{numChanges !== 0 && (
+			{players.length >= numPlayersOn && (
 				<>
 					<ul className="GameConfig-list">
 						<li className="GameConfig-list-item">
 							<h3>Players changed each sub:</h3>
 							<NumericInput
-								min={1}
-								max={Math.max(numPlayers - numPlayersOn, 1)}
-								value={playersPerSub}
+								min={noSubs ? 0 : 1}
+								max={Math.max(numPlayers - numPlayersOn, noSubs ? 0 : 1)}
+								value={noSubs ? 0 : playersPerSub}
 								onChange={changeAndSet(setPlayersPerSub)}
+								disabled={noSubs}
 							/>
 						</li>
 
@@ -95,62 +99,52 @@ const SubConfig = ({ navigateTo }) => {
 
 							<NumericInput
 								value={subMultiplier}
-								displayValue={formatClock(subEvery)}
+								displayValue={noSubs ? "N/A" : formatClock(subEvery)}
 								min={1}
 								max={30}
 								onChange={changeAndSet(setSubMultiplier)}
 								readonly={true}
+								disabled={noSubs}
 							/>
 						</li>
 					</ul>
 
-					<p className="GameConfig-summary">
-						<b>{pluralise(playersPerSub, "player")}</b> every{" "}
-						<b>{formatClock(subEvery)}</b> (
-						<b>{pluralise(numChanges, "sub")}</b> per period.)
-					</p>
+					{noSubs ? (
+						<Card variant="plain">
+							<Typography level="body-md">
+								You have enough active players for a game, but you don't have enough active players to have anybody on the bench, so you won't be able to make subs.
+							</Typography>
+							<Typography level="body-md">
+								To change this, either add active players or modify the game setup.
+							</Typography>
+						</Card>
+					) : (
+						<>
+							<p className="GameConfig-summary">
+								<b>{pluralise(playersPerSub, "player")}</b> every{" "}
+								<b>{formatClock(subEvery)}</b> (
+								<b>{pluralise(numChanges, "sub")}</b> per period.)
+							</p>
 
-					<p className="GameConfig-summary">
-						Players will be <b>on for {formatClock(timeOnField)}</b>{" "}
-						and <b>off for {formatClock(timeOnBench)}</b> at a time.
-					</p>
+							<p className="GameConfig-summary">
+								Players will be <b>on for {formatClock(timeOnField)}</b>{" "}
+								and <b>off for {formatClock(timeOnBench)}</b> at a time.
+							</p>
 
-					<p className="GameConfig-summary">
-						In total, each player gets{" "}
-						<b>{formatClock(playerSecondsEach)} on</b> and{" "}
-						<b>{formatClock(benchSecondsEach)} off</b>.
-					</p>
+							<p className="GameConfig-summary">
+								In total, each player gets{" "}
+								<b>{formatClock(playerSecondsEach)} on</b> and{" "}
+								<b>{formatClock(benchSecondsEach)} off</b>.
+							</p>
 
-					
-					<SaveButtons {...{hasChanged, save, reset }} />					
+							<SaveButtons {...{hasChanged, save, reset }} />
+						</>
+					)}
 				</>
 			)}
 
-			{numChanges === 0 && (
-				<>
-					<p className="GameConfig-summary">
-						You don't have enough players to make subs.
-					</p>
-					<p className="GameConfig-summary">
-						You may need to update your players or change the game
-						settings.
-					</p>
-
-					<div className="BigButtons">
-						<button
-							onClick={() => navigateTo("PLAYERS")}
-							className="BigButtons-button"
-						>
-							Edit Players
-						</button>
-						<button
-							onClick={() => navigateTo("GAME SETTINGS")}
-							className="BigButtons-button alt"
-						>
-							Configure Game
-						</button>
-					</div>
-				</>
+			{players.length < numPlayersOn && (
+				<NotEnoughPlayers navigateTo={navigateTo} />
 			)}
 	</Sheet>
 	);
