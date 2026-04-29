@@ -1,12 +1,17 @@
 .ProgressBar {
-	height: 3rem;
+	height: 1.5rem;
 	border-radius: 4px;
 	padding: 0;
 	text-align: center;
-	font-size: 1.2rem;	
+	font-size: 0.75rem;
 	color: white;
-	font-weight: bold;
+	font-weight: 600;
 	overflow: hidden;
+	position: relative;
+}
+
+.ProgressBar + .ProgressBar {
+	margin-top: 4px;
 }
 
 .ProgressBar-inner {
@@ -17,59 +22,68 @@
 
 .ProgressBar-inner-over {
 	height: 100%;
-	position: relative;
-	top: -100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 	border-radius: inherit;
 	transition: width 1s linear;
 }
 
 .ProgressBar-label {
-	position: relative;
-	top: -200%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 	height: 100%;
-	line-height: 1.2rem;
+	display: flex;
+	align-items: center;
 }
 
 .ProgressBar-label-button {
 	border: none;
-	padding: 1rem;
+	padding: 0 0.5rem;
 	width: 100%;
 	height: 100%;
 	text-align: left;
 	background: none;
 	font: inherit;
 	color: inherit;
-	text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+	font-variant-numeric: tabular-nums;
 }
 
 .ProgressBar.on {
 	background: var(--on);
 }
 
-.ProgressBar.on .ProgressBar-inner{
+.ProgressBar.on .ProgressBar-inner {
 	background: var(--ondark);
 }
 
 .ProgressBar.on .ProgressBar-inner-over {
-	background: #f93;
+	background: var(--ondark);
 }
 
 .ProgressBar.on .ProgressBar-label {
-	color: #444;
+	color: var(--c5);
 }
 
 .ProgressBar.off {
 	background: var(--off);
 }
 
-.ProgressBar.off .ProgressBar-inner{
+.ProgressBar.off .ProgressBar-inner {
 	background: var(--offdark);
+	opacity: 0.5;
 }
 
 .ProgressBar.off .ProgressBar-inner-over {
-	background: #600;
+	background: var(--c1);
+	opacity: 0.7;
 }
 
+.ProgressBar.off .ProgressBar-label {
+	color: var(--c5);
+}
 
 .ProgressBar.slim {
 	height: 0.5rem;
