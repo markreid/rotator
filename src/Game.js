@@ -278,10 +278,11 @@ const Game = ({ subRoute, setSubRoute }) => {
 
 					<Grid
 						container
+						columns={12}
 						spacing={4}
 						sx={{ justifyContent: "space-between" }}
 					>
-						<Grid size={6}>
+						<Grid xs={6}>
 							<PlayerList
 								{...{
 									players: playersOnField,
@@ -295,7 +296,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 								}}
 							/>
 						</Grid>
-						<Grid size={6}>
+						<Grid xs={6}>
 							<PlayerList
 								{...{
 									players: playersOnBench,

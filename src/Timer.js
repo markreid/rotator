@@ -35,14 +35,14 @@ const Timer = ({
 					columns={12}
 					sx={{ flexGrow: 1, justifyContent: "space-between" }}
 				>
-					<Grid size="5">
+					<Grid xs={5}>
 						<Typography>Game Clock</Typography>
-						<Typography level="h1" color="primary">
+						<Typography level="h1" color="primary" sx={{ fontVariantNumeric: 'tabular-nums', textAlign: 'left' }}>
 							{formatClock(periodLengthSeconds - clockTime)}
 						</Typography>
 					</Grid>
 
-					<Grid size={2}>
+					<Grid xs={2}>
 						<ButtonGroup orientation="vertical">
 							<IconButton
 								variant="outlined"
@@ -61,11 +61,11 @@ const Timer = ({
 					
 					{/*<Divider orientation="vertical" />*/}
 					
-					<Grid size={5}>
+					<Grid xs={5}>
 						<Typography  sx={{
 							textAlign: 'right'
 						}}>Next Sub</Typography>
-						<Typography level="h1">
+						<Typography level="h1" sx={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
 							{formatClock(subTimes[0] - clockTime)}
 						</Typography>
 					</Grid>
