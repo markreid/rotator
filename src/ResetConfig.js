@@ -9,9 +9,13 @@ const ResetConfig = () => {
 		navigator.serviceWorker
 			.getRegistration()
 			.then((registration) => {
-				setWorkerWaiting(registration ? registration.waiting : null);
+				if (!registration) return setWorkerWaiting(null);
+				if (registration.waiting) return setWorkerWaiting(registration.waiting);
+				registration.update().then(() => {
+					setWorkerWaiting(registration.waiting || null);
+				});
 			})
-			.catch((err) => {
+			.catch(() => {
 				setWorkerWaiting(null);
 			});
 	}, []);
