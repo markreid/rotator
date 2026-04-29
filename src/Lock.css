@@ -1,18 +1,28 @@
-.Lock {
-	
+.Lock-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	font-size: 1.5em;
 }
 
-.Lock.locked {
-	background: none;
-    border: none;
-    font-size: 1.5rem;
-    width: 1rem;
-    line-height: inherit;
-	width: 100vw;
-	height: 100vh;
-	z-index: 10;
+.Lock {
+	position: relative;
+}
+
+.Lock.locked::after {
+	content: '';
 	position: absolute;
 	top: 0;
 	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 10;
 	background: rgba(255, 255, 255, 0.25);
+}
+
+.Lock.locked .Lock-button {
+	position: relative;
+	z-index: 11;
 }
