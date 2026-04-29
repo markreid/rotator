@@ -240,7 +240,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 						timeOnField,
 						timeOn,
 					}}
-				/>
+				/>	
 			) : (
 				<>
 					<Sheet variant="soft">
@@ -279,7 +279,8 @@ const Game = ({ subRoute, setSubRoute }) => {
 					<Grid
 						container
 						columns={12}
-						spacing={2}
+						spacing={0}
+						gap={0}
 						sx={{ justifyContent: "space-between" }}
 					>
 						<Grid xs={6}>
