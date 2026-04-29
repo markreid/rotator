@@ -25,6 +25,7 @@ import {
 	getConfig,
 	saveConfig,
 	resetConfig,
+	getActivePlayers,
 	SUB_TIME_THRESHOLD,
 	NEXT_SUB_WARNING,
 } from "./configs";
@@ -33,7 +34,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 	// game state - might be more readable to use a reducer?
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
-	const [players, setPlayers] = useState(() => getConfig("players"));
+	const [players, setPlayers] = useState(() => getActivePlayers());
 	const [subs, setSubs] = useState(() => getConfig("subs"));
 	const [clock, setClock] = useState(() => getConfig("clock"));
 	const [clockTime, setClockTime] = useState(calcClockSeconds(clock));

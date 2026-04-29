@@ -19,18 +19,29 @@ import {
 	IoPersonAdd,
 	IoPersonCircle,
 	IoBackspaceOutline,
-	IoShuffle
+	IoShuffle,
+	IoEyeOutline,
+	IoEyeOffOutline,
 } from "react-icons/io5";
 
 import { pluralise, shuffle } from "./util";
-import { getConfig, saveConfig } from "./configs";
+import { getConfig, saveConfig, getActivePlayers } from "./configs";
 
 import "./PlayerConfig.css";
 
 const PlayerConfig = () => {
 	const [players, setPlayers] = useState(() => getConfig("players"));
+	const [inactivePlayers, setInactivePlayers] = useState(() => getConfig("inactivePlayers"));
 	const [newPlayerName, setNewPlayerName] = useState("");
 	const [hasChanged, setHasChanged] = useState(false);
+
+	const toggleActive = (name) => {
+		const updated = inactivePlayers.includes(name)
+			? inactivePlayers.filter((p) => p !== name)
+			: inactivePlayers.concat([name]);
+		setInactivePlayers(updated);
+		setHasChanged(true);
+	};
 
 	const submitHandler = (evt) => {
 		evt.preventDefault();
@@ -59,11 +70,13 @@ const PlayerConfig = () => {
 
 	const save = () => {
 		saveConfig("players", players);
+		saveConfig("inactivePlayers", inactivePlayers);
 		setHasChanged(false);
 	};
 
 	const reset = () => {
 		setPlayers(getConfig("players"));
+		setInactivePlayers(getConfig("inactivePlayers"));
 		setHasChanged(false);
 	};
 
@@ -101,7 +114,9 @@ const PlayerConfig = () => {
 			</Card>
 
 			<List>
-				{players.map((name) => (
+				{players.map((name) => {
+					const isInactive = inactivePlayers.includes(name);
+					return (
 					<>
 						<ListDivider />
 						<ListItem
@@ -117,16 +132,27 @@ const PlayerConfig = () => {
 							}
 						>
 							<ListItemDecorator>
-								<IoPersonCircle size="1.4rem" color="grey" />
+								<IconButton
+									size="sm"
+									variant="plain"
+									onClick={() => toggleActive(name)}
+									aria-label={isInactive ? "Activate" : "Deactivate"}
+								>
+									{isInactive
+										? <IoEyeOffOutline size="1.4rem" color="var(--offdark)" />
+										: <IoEyeOutline size="1.4rem" color="var(--ondark)" />
+									}
+								</IconButton>
 							</ListItemDecorator>
-							<ListItemContent>{name}</ListItemContent>
+							<ListItemContent sx={isInactive ? { opacity: 0.4 } : {}}>{name}</ListItemContent>
 						</ListItem>
 					</>
-				))}
+					);
+				})}
 			</List>
 
 			<Card variant="plain">
-				Total: {pluralise(players.length, "player")}
+				{pluralise(players.length - inactivePlayers.length, "player")} active ({pluralise(players.length, "player")} total)
 				<Button
 					startDecorator={
 						<IoShuffle size="24" />

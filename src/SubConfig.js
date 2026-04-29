@@ -11,13 +11,13 @@ import ButtonGroup from "@mui/joy/ButtonGroup";
 import "./SubConfig.css";
 import { pluralise, formatClock, calculateSubsPlan } from "./util";
 
-import { getConfig, saveConfig } from "./configs";
+import { getConfig, saveConfig, getActivePlayers } from "./configs";
 
 import NumericInput from "./NumericInput";
 import SaveButtons from './SaveButtons';
 
 const SubConfig = ({ navigateTo }) => {
-	const players = useMemo(() => getConfig("players"), []);
+	const players = useMemo(() => getActivePlayers(), []);
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
 

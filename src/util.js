@@ -110,12 +110,14 @@ export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
 	windows.forEach((window) => {
 		window.on.forEach((playerName, i) => {
 			const player = map[playerName];
+			if (!player) return;
 			player.on = player.on + window.length;
 			const wasSubbed = i >= window.on.length - window.numChanges;
 			player.lastOn = wasSubbed ? window.clockTime : player.lastOn;
 		});
 		window.off.forEach((playerName, i) => {
 			const player = map[playerName];
+			if (!player) return;
 			player.off = player.off + window.length;
 			const wasSubbed = i >= window.off.length - window.numChanges;
 			player.lastOff = wasSubbed ? window.clockTime : player.lastOff;
