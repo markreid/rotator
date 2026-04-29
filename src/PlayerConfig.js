@@ -61,6 +61,7 @@ const PlayerConfig = () => {
 	const removePlayer = (name) => {
 		const newPlayers = players.filter((player) => name !== player);
 		setPlayers(newPlayers);
+		setInactivePlayers(inactivePlayers.filter((p) => p !== name));
 		setHasChanged(true);
 	};
 
