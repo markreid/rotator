@@ -6,7 +6,6 @@ import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListDivider from '@mui/joy/ListDivider';
-import LinearProgress from '@mui/joy/LinearProgress';
 import { IoWarning } from 'react-icons/io5';
 
 
@@ -20,7 +19,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 		<div className={`PlayerList ${variant}`}>
 
 			<List>
-				<ListItem>{className}</ListItem>
+				<ListItem sx={{ fontWeight: 'bold', textTransform: 'capitalize', color: 'var(--c4)' }}>{className}</ListItem>
 				<ListDivider />
 				{players.map((player) => {
 					const isSelected = selected.includes(player);
@@ -40,7 +39,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 							}}
 						>
 						<span style={{ flex: 1 }}>{player}</span>
-						{percentage > 100 && <IoWarning color="var(--c1)" />}
+						{percentage > 100 && <IoWarning color="var(--c4)" />}
 						</ListItemButton>						
 						
 						{/*<LinearProgress determinate value={percentage} />*/}

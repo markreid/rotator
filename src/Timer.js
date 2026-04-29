@@ -27,7 +27,7 @@ const Timer = ({
 	const [showButtons, setShowButtons] = useState(true);
 
 	return (
-		<Sheet sx={{ p: 2 }}>
+		<Sheet variant="soft" sx={{ p: 2, paddingBottom: 4 }}>
 			<Card variant="outlined">
 				<Grid
 					container

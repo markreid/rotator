@@ -243,7 +243,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 				/>	
 			) : (
 				<>
-					<Sheet variant="soft">
+					<Sheet variant="sxoft">
 						<Grid
 							container
 							spacing={2}
