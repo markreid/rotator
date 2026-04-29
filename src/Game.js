@@ -279,7 +279,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 					<Grid
 						container
 						columns={12}
-						spacing={4}
+						spacing={2}
 						sx={{ justifyContent: "space-between" }}
 					>
 						<Grid xs={6}>

@@ -1,3 +1,7 @@
+.Game {
+  overflow-x: hidden;
+}
+
 .Sub-Button {
   width: 100%;
   display: flex;
