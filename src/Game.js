@@ -252,7 +252,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 								justifyContent: "space-around",
 							}}
 						>
-							<Grid xs={6}>
+							<Grid xs={6} sx={{ textAlign: 'center' }}>
 								{!on.length && !off.length ? (
 									<Button onClick={autoSub}>Auto Sub</Button>
 								) : (
@@ -268,7 +268,7 @@ const Game = ({ subRoute, setSubRoute }) => {
 									</Button>
 								)}
 							</Grid>
-							<Grid xs={6}>
+							<Grid xs={6} sx={{ textAlign: 'center' }}>
 								<Button color="danger" disabled={!on.length && !off.length} onClick={resetOnOff}>
 									Clear
 								</Button>
