@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo } from "react";
 import Sheet from "@mui/joy/Sheet";
 import Grid from "@mui/joy/Grid";
 import Button from "@mui/joy/Button";
+import AccordionGroup from "@mui/joy/AccordionGroup";
+import Accordion from "@mui/joy/Accordion";
+import AccordionSummary from "@mui/joy/AccordionSummary";
+import AccordionDetails from "@mui/joy/AccordionDetails";
 
 
 import "./Game.css";
@@ -30,6 +34,8 @@ import {
 	SUB_TIME_THRESHOLD,
 	NEXT_SUB_WARNING,
 } from "./configs";
+
+import { getDevMode } from "./AppConfig";
 
 const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	// game state - might be more readable to use a reducer?
@@ -323,6 +329,34 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 						</Grid>
 					</Grid>
 				</>
+			)}
+
+			{getDevMode() && (
+				<AccordionGroup sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', boxShadow: '0 -2px 8px rgba(0,0,0,0.15)', borderTop: '1px solid #ccc' }}>
+					<Accordion>
+						<AccordionSummary>Debug State</AccordionSummary>
+						<AccordionDetails>
+							<pre style={{ fontSize: '0.7em', padding: '8px', overflow: 'auto', maxHeight: '50vh', color: '#888', background: '#f5f5f5' }}>
+								{JSON.stringify({
+									clock,
+									clockTime,
+									players,
+									playersOnField,
+									playersOnBench,
+									on,
+									off,
+									subs,
+									subTimes,
+									subsPlan,
+									gameConfig,
+									subsConfig,
+									timeOn,
+									currentPeriod,
+								}, null, 2)}
+							</pre>
+						</AccordionDetails>
+					</Accordion>
+				</AccordionGroup>
 			)}
 		</div>
 	);
