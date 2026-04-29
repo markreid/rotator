@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 
+import Sheet from "@mui/joy/Sheet";
+import Card from "@mui/joy/Card";
+import Typography from "@mui/joy/Typography";
+import Button from "@mui/joy/Button";
+import Stack from "@mui/joy/Stack";
+
 import ResetButton from "./ResetButton";
 
 const ResetConfig = () => {
@@ -25,14 +31,18 @@ const ResetConfig = () => {
 	}, []);
 
 	return (
-		<div className="page">
-			<h2 className="page-title">Reset</h2>
-			<p className="pad">Restart the app or reset all settings below.</p>
+		<Sheet>
+			<Card variant="plain">
+				<Typography level="h1">Reset</Typography>
+				<Typography level="body-md">
+					Restart the app or reset all settings below.
+				</Typography>
+			</Card>
 			<ResetButton />
-
-			<div className="BigButtons">
-				<button
-					className="BigButtons-button alt"
+			<Stack spacing={1.5} sx={{ p: 1.5 }}>
+				<Button
+					variant="soft"
+					color="neutral"
 					disabled={!workerWaiting}
 					onClick={() => {
 						navigator.serviceWorker
@@ -44,8 +54,6 @@ const ResetConfig = () => {
 
 								setWorkerWaiting(false);
 
-								// not sure if we need to wait here because
-								// the postMessage is _probably_ async?
 								document.location.reload();
 							});
 					}}
@@ -53,9 +61,9 @@ const ResetConfig = () => {
 					{workerWaiting === false && "Checking for updates"}
 					{workerWaiting === null && "No updates found"}
 					{!!workerWaiting && "Update now"}
-				</button>
-			</div>
-		</div>
+				</Button>
+			</Stack>
+		</Sheet>
 	);
 };
 
