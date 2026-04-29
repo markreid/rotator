@@ -6,6 +6,10 @@ const ResetConfig = () => {
 	const [workerWaiting, setWorkerWaiting] = useState(false);
 
 	useEffect(() => {
+		if (!("serviceWorker" in navigator)) {
+			setWorkerWaiting(null);
+			return;
+		}
 		navigator.serviceWorker
 			.getRegistration()
 			.then((registration) => {
