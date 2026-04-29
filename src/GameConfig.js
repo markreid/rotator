@@ -9,6 +9,7 @@ import IconButton from "@mui/joy/IconButton";
 import ButtonGroup from "@mui/joy/ButtonGroup";
 
 import NumericInput from "./NumericInput";
+import SaveButtons from "./SaveButtons";
 
 import "./GameConfig.css";
 
@@ -94,26 +95,7 @@ const GameConfig = ({ subMultiplier, setSubMultiplier }) => {
 				time.
 			</p>
 
-			<Card variant="plain">
-			<ButtonGroup>
-				<Button
-					variant="soft"
-					color="primary"
-					disabled={!hasChanged}
-					onClick={saveToConfig}
-				>
-					SAVE
-				</Button>
-				<Button
-					variant="soft"
-					color="danger"
-					disabled={!hasChanged}
-					onClick={resetFromSaved}
-				>
-					RESET
-				</Button>
-			</ButtonGroup>
-			</Card>
+			<SaveButtons hasChanged={hasChanged} save={saveToConfig} reset={resetFromSaved} />
 			
 		</Sheet>
 	);

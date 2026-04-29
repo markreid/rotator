@@ -26,6 +26,7 @@ import {
 
 import { pluralise, shuffle } from "./util";
 import { getConfig, saveConfig, getActivePlayers } from "./configs";
+import SaveButtons from "./SaveButtons";
 
 import "./PlayerConfig.css";
 
@@ -165,14 +166,7 @@ const PlayerConfig = () => {
 				</Button>
 			</Card>
 
-			<Card variant="plain">
-				<Button disabled={!hasChanged} onClick={save} color="success">
-					SAVE
-				</Button>
-				<Button disabled={!hasChanged} onClick={reset} color="danger">
-					RESET
-				</Button>
-			</Card>
+			<SaveButtons {...{ hasChanged, save, reset }} />
 		</Sheet>
 	);
 };
