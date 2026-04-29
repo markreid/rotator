@@ -1,0 +1,11 @@
+.Palette-swatch--c1 { background-color: var(--c1); }
+.Palette-swatch--c2 { background-color: var(--c2); }
+.Palette-swatch--c3 { background-color: var(--c3); }
+.Palette-swatch--c4 { background-color: var(--c4); }
+.Palette-swatch--c5 { background-color: var(--c5); }
+.Palette-swatch--off { background-color: var(--off); }
+.Palette-swatch--on { background-color: var(--on); }
+.Palette-swatch--ondark { background-color: var(--ondark); }
+.Palette-swatch--offdark { background-color: var(--offdark); }
+.Palette-swatch--onlight { background-color: var(--onlight); }
+.Palette-swatch--offlight { background-color: var(--offlight); }

@@ -1,6 +1,15 @@
 import { useState, useMemo } from "react";
 
+import Sheet from "@mui/joy/Sheet";
+import Card from "@mui/joy/Card";
+import Typography from "@mui/joy/Typography";
+import Input from "@mui/joy/Input";
+import Button from "@mui/joy/Button";
+import IconButton from "@mui/joy/IconButton";
+import ButtonGroup from "@mui/joy/ButtonGroup";
+
 import NumericInput from "./NumericInput";
+import SaveButtons from "./SaveButtons";
 
 import "./GameConfig.css";
 
@@ -43,8 +52,10 @@ const GameConfig = ({ subMultiplier, setSubMultiplier }) => {
 	};
 
 	return (
-		<div className="GameConfig page">
-			<h2 className="page-title">Game Settings</h2>
+		<Sheet>
+			<Card variant="plain">
+				<Typography level="h1">Game Setup</Typography>
+			</Card>
 			<ul className="GameConfig-list">
 				<li className="GameConfig-list-item">
 					<h3>Periods:</h3>
@@ -84,23 +95,9 @@ const GameConfig = ({ subMultiplier, setSubMultiplier }) => {
 				time.
 			</p>
 
-			<div className="BigButtons">
-				<button
-					disabled={!hasChanged}
-					className="BigButtons-button"
-					onClick={saveToConfig}
-				>
-					SAVE
-				</button>
-				<button
-					disabled={!hasChanged}
-					className="BigButtons-button dangerous"
-					onClick={resetFromSaved}
-				>
-					RESET
-				</button>
-			</div>
-		</div>
+			<SaveButtons hasChanged={hasChanged} save={saveToConfig} reset={resetFromSaved} />
+			
+		</Sheet>
 	);
 };
 

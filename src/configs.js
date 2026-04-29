@@ -17,10 +17,12 @@ const GAMECONFIG_DEFAULTS = {
 
 const SUBS_DEFAULT = [];
 const PLAYERS_DEFAULT = [];
+const INACTIVE_PLAYERS_DEFAULT = [];
 
 export const DEFAULTS = {
 	subs: SUBS_DEFAULT,
 	players: PLAYERS_DEFAULT,
+	inactivePlayers: INACTIVE_PLAYERS_DEFAULT,
 	clock: CLOCK_DEFAULTS,
 	subsConfig: SUBSCONFIG_DEFAULTS,
 	gameConfig: GAMECONFIG_DEFAULTS,
@@ -59,3 +61,9 @@ export const resetAll = () =>
 	Object.keys(DEFAULTS).forEach((key) =>
 		localStorage.removeItem(`rotator.${key}`),
 	);
+
+export const getActivePlayers = () => {
+	const players = getConfig("players");
+	const inactive = getConfig("inactivePlayers");
+	return players.filter((p) => !inactive.includes(p));
+};

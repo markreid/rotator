@@ -1,6 +1,12 @@
 import "./GameStats.css";
 
-import ProgressBar from './ProgressBar';
+import List from "@mui/joy/List";
+import ListItem from "@mui/joy/ListItem";
+import ListDivider from "@mui/joy/ListDivider";
+import Typography from "@mui/joy/Typography";
+import Box from "@mui/joy/Box";
+
+import ProgressBar from "./ProgressBar";
 
 const GameStats = ({
 	subs,
@@ -13,30 +19,29 @@ const GameStats = ({
 	timeOnField,
 	timeOn,
 }) => {
-	
-
 	return (
-		<div className="GameStats">
-			<ul className="GameStats-list">
-				{players.map((player) => (
-					<li className="GameStats-list-item" key={player}>
-						<h3 className="GameStats-list-item-player">{player}</h3>
-
+		<List>
+			{players.map((player, i) => (
+				<Box key={player}>
+					{i > 0 && <ListDivider />}
+					<ListItem sx={{ display: "block", py: 0.75, px: 1.5 }}>
+						<Typography level="body-sm" fontWeight="md" sx={{ mb: 0.5 }}>
+							{player}
+						</Typography>
 						<ProgressBar
 							variant="on"
 							val={timeOn[player].on}
 							target={playerSecondsEach}
 						/>
-
 						<ProgressBar
 							variant="off"
 							val={timeOn[player].off}
 							target={benchSecondsEach}
-						/>				
-					</li>
-				))}
-			</ul>
-		</div>
+						/>
+					</ListItem>
+				</Box>
+			))}
+		</List>
 	);
 };
 

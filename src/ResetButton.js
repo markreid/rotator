@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import Button from "@mui/joy/Button";
+import Stack from "@mui/joy/Stack";
+
 import { resetAll } from "./configs";
 
 const reset = () => {
@@ -11,24 +14,26 @@ const ResetButton = () => {
 	const [hasReset, setHasReset] = useState(false);
 
 	return (
-		<div className="BigButtons">
-			<button
-				className="BigButtons-button"
+		<Stack spacing={1.5} sx={{ p: 1.5 }}>
+			<Button
+				variant="soft"
+				color="neutral"
 				onClick={() => document.location.reload()}
 			>
-				RESTART
-			</button>
-			<button
+				Restart
+			</Button>
+			<Button
+				variant="soft"
+				color="danger"
 				disabled={hasReset}
-				className="BigButtons-button dangerous"
 				onClick={() => {
 					reset();
 					setHasReset(true);
 				}}
 			>
-				RESET ALL SETTINGS
-			</button>
-		</div>
+				Reset All Settings
+			</Button>
+		</Stack>
 	);
 };
 
