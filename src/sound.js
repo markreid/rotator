@@ -10,21 +10,26 @@ export const SOUNDS = {
 	clockStart: StateChangeConfirmUp,	
 };
 
-const audioElement = new Audio();
+let currentAudio = null;
 
 export const playSound = (sound) => {
-	// no sound, do nothing
 	if (!SOUNDS[sound]) return null;
 
-	audioElement.src = SOUNDS[sound];
-	
-	try {
-		audioElement.play();
-	} catch (err) {
-		// do nothing
+	if (currentAudio) {
+		currentAudio.pause();
+		currentAudio = null;
 	}
+
+	const audio = new Audio(SOUNDS[sound]);
+	currentAudio = audio;
+	audio.play().catch(() => {});
 }
 
-export const stopSound = () => audioElement.pause();
+export const stopSound = () => {
+	if (currentAudio) {
+		currentAudio.pause();
+		currentAudio = null;
+	}
+};
 
 
