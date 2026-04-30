@@ -227,7 +227,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	const devMode = getDevMode();
 
 	return (
-		<div className="Game" style={devMode ? { paddingBottom: '48px' } : {}}>
+		<div className="Game">
 			<Timer
 				{...{
 					clockTime,
