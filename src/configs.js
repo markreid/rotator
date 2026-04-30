@@ -6,7 +6,7 @@ const CLOCK_DEFAULTS = {
 
 const SUBSCONFIG_DEFAULTS = {
 	playersPerSub: 1,
-	subMultiplier: 1,
+	benchTurns: 1,
 };
 
 const GAMECONFIG_DEFAULTS = {

@@ -25,8 +25,8 @@ const SubConfig = ({ navigateTo }) => {
 	const [playersPerSub, setPlayersPerSub] = useState(
 		subsConfig.playersPerSub,
 	);
-	const [subMultiplier, setSubMultiplier] = useState(
-		subsConfig.subMultiplier,
+	const [benchTurns, setBenchTurns] = useState(
+		subsConfig.benchTurns,
 	);
 	const [hasChanged, setHasChanged] = useState(false);
 
@@ -34,14 +34,14 @@ const SubConfig = ({ navigateTo }) => {
 		() =>
 			calculateSubsPlan(players.length, gameConfig, {
 				playersPerSub,
-				subMultiplier,
+				benchTurns,
 			}),
-		[players.length, gameConfig, playersPerSub, subMultiplier],
+		[players.length, gameConfig, playersPerSub, benchTurns],
 	);
 
 	const reset = () => {
 		setPlayersPerSub(subsConfig.playersPerSub);
-		setSubMultiplier(subsConfig.subMultiplier);
+		setBenchTurns(subsConfig.benchTurns);
 		setHasChanged(false);
 	};
 
@@ -62,7 +62,7 @@ const SubConfig = ({ navigateTo }) => {
 	const save = () => {
 		saveConfig("subsConfig", {
 			playersPerSub,
-			subMultiplier,
+			benchTurns,
 		});
 		setHasChanged(false);
 		// reset();
@@ -95,15 +95,13 @@ const SubConfig = ({ navigateTo }) => {
 						</li>
 
 						<li className="GameConfig-list-item">
-							<h3>Sub frequency:</h3>
+							<h3>Turns on the bench:</h3>
 
 							<NumericInput
-								value={subMultiplier}
-								displayValue={noSubs ? "N/A" : formatClock(subEvery)}
+								value={benchTurns}
 								min={1}
 								max={30}
-								onChange={changeAndSet(setSubMultiplier)}
-								readonly={true}
+								onChange={changeAndSet(setBenchTurns)}
 								disabled={noSubs}
 							/>
 						</li>
@@ -121,14 +119,13 @@ const SubConfig = ({ navigateTo }) => {
 					) : (
 						<>
 							<p className="GameConfig-summary">
-								<b>{pluralise(playersPerSub, "player")}</b> every{" "}
-								<b>{formatClock(subEvery)}</b> (
-								<b>{pluralise(numChanges, "sub")}</b> per period.)
+								Every{" "}<b>{formatClock(subEvery)}</b> we'll sub <b>{pluralise(playersPerSub, "player")}</b>, for a total of{" "}														
+								<b>{pluralise(numChanges, "sub")}</b> per period.
 							</p>
 
 							<p className="GameConfig-summary">
-								Players will be <b>on for {formatClock(timeOnField)}</b>{" "}
-								and <b>off for {formatClock(timeOnBench)}</b> at a time.
+								Players will have{" "}<b>{pluralise(benchTurns, "turn")}</b>{" "} on the bench per period, for{" "}<b>{formatClock(timeOnBench)}</b> at a time.
+								They'll be on the field for a minimum of{" "}<b>{formatClock(timeOnField)}</b>.
 							</p>
 
 							<p className="GameConfig-summary">

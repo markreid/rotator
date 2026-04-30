@@ -6,13 +6,13 @@ import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
 import ListDivider from '@mui/joy/ListDivider';
-import { IoArrowForward, IoArrowBack } from 'react-icons/io5';
+import { IoArrowForward, IoArrowBack, IoArrowForwardCircle, IoArrowBackCircle, IoHandRightOutline } from 'react-icons/io5';
 
 import { getDevMode } from './AppConfig';
 
 
 
-const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, targetTotalTime, clockTime}) => {
+const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, targetTotalTime, inverseTotalTime, clockTime}) => {
 	const devMode = getDevMode();
 
 	
@@ -27,12 +27,22 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 				{players.map((player) => {
 					const isSelected = selected.includes(player);
 					
-					// calculate the % of the current sub for this player
+					// calc % of time in this state for the current sub only
 					const percentageThisSub = Math.round(((clockTime - timeOn[player][timeOnReference]) / targetTimeOn) * 100);
 					const totalTimeKey = variant === 'on' ? 'on' : 'off';
-					const percentageTotal = Math.round((timeOn[player][totalTimeKey] / targetTotalTime) * 100);					
+					
+					// calc % of time in this state for the total game 
+					const percentageTotal = Math.round((timeOn[player][totalTimeKey] / targetTotalTime) * 100);
+					
+					// calc % of time in the inverse state for the total game
+					const inverseTimeKey = variant === 'on' ? 'off' : 'on';
+					const percentageInverse = Math.round((timeOn[player][inverseTimeKey] / inverseTotalTime) * 100);
+
+					// should this player stay where they are? ie, have they already done 100% of the time in the inverse state?
+					const shouldStay = percentageInverse >= 100;					
+					
 					return (
-					<ListItem key={player} sx={{ paddingRight: '1px' }}>
+					<ListItem key={player} sx={{ paddingRight: '1px', paddingBlock: '4px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
 						<ListItemButton
 							selected={isSelected}
 							onClick={() => select(player)}
@@ -46,7 +56,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 							}}
 						>
 						<span style={{ flex: 1 }}>{player}{devMode && <span style={{ color: '#aaa', marginLeft: '4px', fontSize: '0.8em' }}>{percentageThisSub}% - {percentageTotal}%</span>}</span>
-						{percentageThisSub > 100 && (variant === 'on' ? <IoArrowForward color="var(--off)" /> : <IoArrowBack color="var(--on)" />)}
+						{shouldStay ? <IoHandRightOutline color="var(--c4)" size="1.2em" /> : percentageTotal > 100 ? (variant === 'on' ? <IoArrowForwardCircle color="var(--off)" size="1.2em" /> : <IoArrowBackCircle color="var(--on)" size="1.2em" />) : percentageThisSub > 100 ? (variant === 'on' ? <IoArrowForward color="var(--off)" size="1.2em" /> : <IoArrowBack color="var(--on)" size="1.2em" />) : null}
 						</ListItemButton>						
 						
 						<ProgressBar

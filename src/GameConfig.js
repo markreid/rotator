@@ -18,7 +18,7 @@ import { getConfig, saveConfig } from "./configs";
 
 const PERIOD_NAMES = ["periods", "period", "halves", "thirds", "quarters"];
 
-const GameConfig = ({ subMultiplier, setSubMultiplier }) => {
+const GameConfig = ({ benchTurns, setBenchTurns }) => {
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 
 	const [numPeriods, setNumPeriods] = useState(gameConfig.numPeriods);

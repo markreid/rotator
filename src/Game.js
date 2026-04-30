@@ -312,6 +312,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									timeOn,
 									targetTimeOn: timeOnField,
 									targetTotalTime: playerSecondsEach,
+									inverseTotalTime: benchSecondsEach,
 									clockTime,
 								}}
 							/>
@@ -327,6 +328,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									timeOn,
 									targetTimeOn: timeOnBench,
 									targetTotalTime: benchSecondsEach,
+									inverseTotalTime: playerSecondsEach,
 									clockTime,
 								}}
 							/>

@@ -20,14 +20,14 @@ export const formatClock = (seconds) => {
 
 // calculate the sub times for a game
 export const calcSubTimes = (gameSettings, subSettings, players) => {
-	const { playersPerSub, subMultiplier } = subSettings;
+	const { playersPerSub, benchTurns } = subSettings;
 	const { periodLengthMinutes, numPlayersOn } = gameSettings;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
 	const numChanges = calcChanges(
 		numPlayersOn,
 		players.length,
 		playersPerSub,
-		subMultiplier,
+		benchTurns,
 	);
 	const subEvery = Math.ceil(periodLengthSeconds / (numChanges + 1));
 
@@ -60,8 +60,8 @@ export const calcChanges = (
 	numPlayersOn,
 	numPlayers,
 	playersPerSub,
-	subMultiplier,
-) => calcMinChanges(numPlayersOn, numPlayers, playersPerSub) * subMultiplier;
+	benchTurns,
+) => calcMinChanges(numPlayersOn, numPlayers, playersPerSub) * benchTurns;
 
 // number of seconds since a date
 export const secondsSince = (date) =>
@@ -132,7 +132,7 @@ export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
 // do players spend on the field vs bench per sub and in total.
 export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 	const { numPlayersOn, periodLengthMinutes } = gameConfig;
-	const { playersPerSub, subMultiplier } = subsConfig;
+	const { playersPerSub, benchTurns } = subsConfig;
 
 	const numPlayersOff = numPlayers - numPlayersOn;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
@@ -144,7 +144,7 @@ export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 		numPlayersOn,
 		numPlayers,
 		playersPerSub,
-		subMultiplier,
+		benchTurns,
 	);
 	const subEvery = periodLengthSeconds / (numChanges + 1);
 
