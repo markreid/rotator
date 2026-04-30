@@ -20,8 +20,7 @@
 
 
 html, body {
-  /*height: 100vh;
-  overflow: hidden;*/
+  background: #F0F4F8;
 }
 
 .App {
@@ -30,6 +29,8 @@ html, body {
   display: flex;
   flex-direction: column;
   color: var(--c5);
+  min-height: 100vh;
+  background: #FBFCFE;
 }
 
 .emoji-button {
