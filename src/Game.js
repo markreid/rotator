@@ -151,14 +151,22 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		timeOnField,
 	} = subsPlan;
 
+	const shouldStay = (player, variant) => {
+		const inverseKey = variant === 'on' ? 'off' : 'on';
+		const inverseTotalTime = variant === 'on' ? benchSecondsEach : playerSecondsEach;
+		return inverseTotalTime > 0 && Math.round((timeOn[player][inverseKey] / inverseTotalTime) * 100) >= 100;
+	};
+
 	// automatically select players for the next sub.
 	const autoSub = () => {
 		const sortedField = playersOnField
 			.slice()
+			.filter((p) => !shouldStay(p, 'on'))
 			.sort((a, b) => timeOn[a].lastOn - timeOn[b].lastOn)
 			.slice(0, playersPerSub);
 		const sortedBench = playersOnBench
 			.slice()
+			.filter((p) => !shouldStay(p, 'off'))
 			.sort((a, b) => timeOn[a].lastOff - timeOn[b].lastOff)
 			.slice(0, playersPerSub);
 		setOff(sortedField);

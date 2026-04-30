@@ -34,7 +34,12 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 			<List>
 				<ListItem sx={{ fontWeight: 'bold', textTransform: 'capitalize', color: 'var(--c4)' }}>{className}</ListItem>
 				<ListDivider />
-				{players.map((player) => {
+				{players.slice().sort((a, b) => {
+				const inverseTimeKey = variant === 'on' ? 'off' : 'on';
+				const aStay = Math.round((timeOn[a][inverseTimeKey] / inverseTotalTime) * 100) >= 100;
+				const bStay = Math.round((timeOn[b][inverseTimeKey] / inverseTotalTime) * 100) >= 100;
+				return aStay - bStay;
+			}).map((player) => {
 					const isSelected = selected.includes(player);
 					
 					// calc % of time in this state for the current sub only
