@@ -126,6 +126,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		setClockTime(0);
 		resetSubs();
 		resetConfig("clock");
+		setSubTimes(calcSubTimes(gameConfig, subsConfig, players));
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
