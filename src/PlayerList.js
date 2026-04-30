@@ -17,8 +17,9 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 
 	const timeOnReference = variant === 'on' ? 'lastOn' : 'lastOff';
 
-	const nextSubTime = subTimes.find((t) => t > clockTime);
-	const withinWarning = nextSubTime != null && nextSubWarning > 0 && (nextSubTime - clockTime) <= nextSubWarning;
+	const nextSubTime = subTimes.find((t) => t >= clockTime);
+	const pastSubTime = subTimes.length > 0 && subTimes[0] < clockTime;
+	const withinWarning = pastSubTime || (nextSubTime != null && nextSubWarning > 0 && (nextSubTime - clockTime) <= nextSubWarning);
 
 	const suggestedPlayers = withinWarning
 		? players
