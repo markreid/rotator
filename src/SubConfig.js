@@ -125,13 +125,13 @@ const SubConfig = ({ navigateTo }) => {
 
 							<p className="GameConfig-summary">
 								Players will have{" "}<b>{pluralise(benchTurns, "turn")}</b>{" "} on the bench per period, for{" "}<b>{formatClock(timeOnBench)}</b> at a time.
-								They'll be on the field for a minimum of{" "}<b>{formatClock(timeOnField)}</b>.
+								Players will be on field for maximum {" "}<b>{formatClock(timeOnField)}</b> at a time.
 							</p>
 
 							<p className="GameConfig-summary">
 								In total, each player gets{" "}
 								<b>{formatClock(playerSecondsEach)} on</b> and{" "}
-								<b>{formatClock(benchSecondsEach)} off</b>.
+								<b>{formatClock(benchSecondsEach)} off</b> per period.
 							</p>
 
 							<SaveButtons {...{hasChanged, save, reset }} />

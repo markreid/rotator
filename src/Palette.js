@@ -1,7 +1,6 @@
 import Sheet from "@mui/joy/Sheet";
 import Card from "@mui/joy/Card";
 import Typography from "@mui/joy/Typography";
-import Box from "@mui/joy/Box";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 
