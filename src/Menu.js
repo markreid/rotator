@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import Box from '@mui/joy/Box';
 import IconButton from '@mui/joy/IconButton';
-import Button from '@mui/joy/Button';
 import Drawer from '@mui/joy/Drawer';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
@@ -28,7 +27,7 @@ const Menu = ({ screen, navigateTo, route, subRoute, setSubRoute, devMode }) => 
 	};
 
 	return (
-		<Sheet variant="soft">
+		<Sheet variant="soft" sx={{ position: 'sticky', top: 0, zIndex: 900 }}>
 			<Stack
 				direction="row"
 				spacing={2}
