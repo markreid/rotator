@@ -30,6 +30,12 @@ Once a player has exceeded the total amount of time they should be spending on t
 If a player shouldn't be subbed because they've already exceeded their time on the field or bench, a hand icon will appear next to their name, indicating they should stay where they are. 
 
 
+#### Locking the UI
+
+Pressing the padlock icon in the top left will lock the entire interface so no buttons can be pressed - useful if you need to put your phone in your pocket during gameplay. You can then unlock the UI by pressing the button again.
+
+
+
 
 ## Todo List
 
