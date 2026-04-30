@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-import { IoPlay, IoPause, IoRefreshCircle } from "react-icons/io5";
+import { IoPlay, IoPause, IoRefreshCircle, IoLockClosed } from "react-icons/io5";
 import Card from "@mui/joy/Card";
 import Sheet from "@mui/joy/Sheet";
 import Grid from "@mui/joy/Grid";
@@ -23,8 +23,18 @@ const Timer = ({
 	numPeriods,
 	subTimes,
 }) => {
-	// we could hide the buttons by default so you don't push them by mistake
-	const [showButtons, setShowButtons] = useState(true);
+	const [showButtons, setShowButtons] = useState(!clockRunning);
+	const timerRef = useRef(null);
+
+	const revealButtons = () => {
+		setShowButtons(true);
+		if (timerRef.current) clearTimeout(timerRef.current);
+		timerRef.current = setTimeout(() => setShowButtons(false), 5000);
+	};
+
+	useEffect(() => {
+		return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+	}, []);
 
 	return (
 		<Sheet variant="soft" sx={{ p: 2, paddingBottom: 4 }}>
@@ -43,23 +53,32 @@ const Timer = ({
 					</Grid>
 
 					<Grid xs={2}>
-						<ButtonGroup orientation="vertical">
-							<IconButton
-								variant="outlined"
-								onClick={() => {
-									if (!clockRunning) setShowButtons(false);
-									toggleClock();
-								}}
-							>
-								{clockRunning ? <IoPause /> : <IoPlay />}
+						{clockRunning && !showButtons ? (
+							<IconButton variant="outlined" onClick={revealButtons}>
+								<IoLockClosed />
 							</IconButton>
-							<IconButton variant="outlined" onClick={resetClock}>
-								<IoRefreshCircle />
-							</IconButton>
-						</ButtonGroup>
+						) : (
+							<ButtonGroup orientation="vertical">
+								<IconButton
+									variant="outlined"
+									onClick={() => {
+										if (!clockRunning) {
+											setShowButtons(false);
+											if (timerRef.current) clearTimeout(timerRef.current);
+										}
+										toggleClock();
+									}}
+								>
+									{clockRunning ? <IoPause /> : <IoPlay />}
+								</IconButton>
+								{!clockRunning && (
+									<IconButton variant="outlined" onClick={resetClock}>
+										<IoRefreshCircle />
+									</IconButton>
+								)}
+							</ButtonGroup>
+						)}
 					</Grid>
-					
-					{/*<Divider orientation="vertical" />*/}
 					
 					<Grid xs={5}>
 						<Typography  sx={{
@@ -70,7 +89,6 @@ const Timer = ({
 						</Typography>
 					</Grid>
 				</Grid>
-				{/*<Divider />*/}
 				<Grid container>					
 				</Grid>
 			</Card>
@@ -79,27 +97,3 @@ const Timer = ({
 };
 
 export default Timer;
-
-/**
- * 
-				<button
-					onClick={() => {
-						stopSound();
-						setShowButtons(!showButtons);
-					}}
-					className="Timer-face-clock"
-				>
-					{formatClock(periodLengthSeconds - clockTime)}
-				</button>
-				<p className="Timer-face-periods">
-					{currentPeriod} / {numPeriods}
-				</p>
-			</Card>
-
-			
-			<div className={`Timer-buttons ${showButtons ? "" : "hidden"}`}>
-				
-			</div>
-		</Sheet>
-
-		*/
