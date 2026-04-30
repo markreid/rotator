@@ -32,7 +32,6 @@ import {
 	resetConfig,
 	getActivePlayers,
 	SUB_TIME_THRESHOLD,
-	NEXT_SUB_WARNING,
 } from "./configs";
 
 import { getDevMode } from "./AppConfig";
@@ -63,7 +62,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 			setClockTime(newClockTime);
 
 			// next sub coming up
-			if (subTimes.includes(newClockTime + NEXT_SUB_WARNING)) {
+			if (subsConfig.nextSubWarning > 0 && subTimes.includes(newClockTime + subsConfig.nextSubWarning)) {
 				playSound("nextSubSoon");
 			}
 

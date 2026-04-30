@@ -7,12 +7,13 @@ const CLOCK_DEFAULTS = {
 const SUBSCONFIG_DEFAULTS = {
 	playersPerSub: 1,
 	benchTurns: 1,
+	nextSubWarning: 30,
 };
 
 const GAMECONFIG_DEFAULTS = {
 	numPeriods: 2,
 	periodLengthMinutes: 20,
-	numPlayersOn: 4,
+	numPlayersOn: 7,
 };
 
 const SUBS_DEFAULT = [];

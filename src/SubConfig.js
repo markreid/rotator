@@ -28,6 +28,9 @@ const SubConfig = ({ navigateTo }) => {
 	const [benchTurns, setBenchTurns] = useState(
 		subsConfig.benchTurns,
 	);
+	const [nextSubWarning, setNextSubWarning] = useState(
+		subsConfig.nextSubWarning ?? 30,
+	);
 	const [hasChanged, setHasChanged] = useState(false);
 
 	const subsPlan = useMemo(
@@ -42,6 +45,7 @@ const SubConfig = ({ navigateTo }) => {
 	const reset = () => {
 		setPlayersPerSub(subsConfig.playersPerSub);
 		setBenchTurns(subsConfig.benchTurns);
+		setNextSubWarning(subsConfig.nextSubWarning ?? 30);
 		setHasChanged(false);
 	};
 
@@ -63,6 +67,7 @@ const SubConfig = ({ navigateTo }) => {
 		saveConfig("subsConfig", {
 			playersPerSub,
 			benchTurns,
+			nextSubWarning,
 		});
 		setHasChanged(false);
 		// reset();
@@ -105,6 +110,17 @@ const SubConfig = ({ navigateTo }) => {
 								disabled={noSubs}
 							/>
 						</li>
+
+						<li className="GameConfig-list-item">
+							<h3>Next sub alert sound (seconds before sub):</h3>
+							<NumericInput
+								value={nextSubWarning}
+								min={0}
+								max={Math.max(Math.floor(subEvery) - 1, 0)}
+								onChange={changeAndSet(setNextSubWarning)}
+								disabled={noSubs}
+							/>
+						</li>
 					</ul>
 
 					{noSubs ? (
@@ -133,6 +149,14 @@ const SubConfig = ({ navigateTo }) => {
 								<b>{formatClock(playerSecondsEach)} on</b> and{" "}
 								<b>{formatClock(benchSecondsEach)} off</b> per period.
 							</p>
+
+							{nextSubWarning > 0 ? (
+								<p className="GameConfig-summary">
+									I'll play a sound{" "}<b>{pluralise(nextSubWarning, "second")}</b> before the next sub.
+								</p>) : (
+								<p className="GameConfig-summary">I won't play an alert sound until it's time to make a sub.</p>
+							)}
+
 
 							<SaveButtons {...{hasChanged, save, reset }} />
 						</>
