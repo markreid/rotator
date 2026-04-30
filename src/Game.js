@@ -152,8 +152,16 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 
 	// automatically select players for the next sub.
 	const autoSub = () => {
-		setOff(players.slice(0, playersPerSub));
-		setOn(players.slice(numPlayersOn, numPlayersOn + playersPerSub));
+		const sortedField = playersOnField
+			.slice()
+			.sort((a, b) => timeOn[a].lastOn - timeOn[b].lastOn)
+			.slice(0, playersPerSub);
+		const sortedBench = playersOnBench
+			.slice()
+			.sort((a, b) => timeOn[a].lastOff - timeOn[b].lastOff)
+			.slice(0, playersPerSub);
+		setOff(sortedField);
+		setOn(sortedBench);
 	};
 
 	// add or remove a player from the on/off list
@@ -312,6 +320,9 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									targetTimeOn: timeOnField,
 									targetTotalTime: playerSecondsEach,
 									inverseTotalTime: benchSecondsEach,
+									subTimes,
+									nextSubWarning: subsConfig.nextSubWarning,
+									playersPerSub,
 									clockTime,
 								}}
 							/>
@@ -328,6 +339,9 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									targetTimeOn: timeOnBench,
 									targetTotalTime: benchSecondsEach,
 									inverseTotalTime: playerSecondsEach,
+									subTimes,
+									nextSubWarning: subsConfig.nextSubWarning,
+									playersPerSub,
 									clockTime,
 								}}
 							/>

@@ -12,11 +12,20 @@ import { getDevMode } from './AppConfig';
 
 
 
-const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, targetTotalTime, inverseTotalTime, clockTime}) => {
+const PlayerList = ({ players, variant, className, selected, select, timeOn, targetTimeOn, targetTotalTime, inverseTotalTime, subTimes, nextSubWarning, playersPerSub, clockTime}) => {
 	const devMode = getDevMode();
 
-	
 	const timeOnReference = variant === 'on' ? 'lastOn' : 'lastOff';
+
+	const nextSubTime = subTimes.find((t) => t > clockTime);
+	const withinWarning = nextSubTime != null && nextSubWarning > 0 && (nextSubTime - clockTime) <= nextSubWarning;
+
+	const suggestedPlayers = withinWarning
+		? players
+			.slice()
+			.sort((a, b) => timeOn[a][timeOnReference] - timeOn[b][timeOnReference])
+			.slice(0, playersPerSub)
+		: [];
 
 	return (
 		<div className={`PlayerList ${variant}`}>
@@ -56,7 +65,7 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 							}}
 						>
 						<span style={{ flex: 1 }}>{player}{devMode && <span style={{ color: '#aaa', marginLeft: '4px', fontSize: '0.8em' }}>{percentageThisSub}% - {percentageTotal}%</span>}</span>
-						{shouldStay ? <IoHandRightOutline color="var(--c4)" size="1.2em" /> : percentageTotal > 100 ? (variant === 'on' ? <IoArrowForwardCircle color="var(--off)" size="1.2em" /> : <IoArrowBackCircle color="var(--on)" size="1.2em" />) : percentageThisSub > 100 ? (variant === 'on' ? <IoArrowForward color="var(--off)" size="1.2em" /> : <IoArrowBack color="var(--on)" size="1.2em" />) : null}
+						{shouldStay ? <IoHandRightOutline color="var(--c4)" size="1.2em" /> : percentageTotal > 100 ? (variant === 'on' ? <IoArrowForwardCircle color="var(--off)" size="1.2em" /> : <IoArrowBackCircle color="var(--on)" size="1.2em" />) : suggestedPlayers.includes(player) ? (variant === 'on' ? <IoArrowForward color="var(--off)" size="1.2em" /> : <IoArrowBack color="var(--on)" size="1.2em" />) : null}
 						</ListItemButton>						
 						
 						<ProgressBar
