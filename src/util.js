@@ -38,6 +38,18 @@ export const calcSubTimes = (gameSettings, subSettings, players) => {
 	});
 };
 
+export const calcRemainingSubTimes = (allSubTimes, subs, threshold) => {
+	const remaining = [...allSubTimes];
+	subs.forEach((sub) => {
+		if (sub.numChanges === 0) return;
+		const idx = remaining.findIndex(
+			(t) => Math.abs(t - sub.clockTime) <= threshold,
+		);
+		if (idx !== -1) remaining.splice(idx, 1);
+	});
+	return remaining;
+};
+
 export const removeElement = (arr, index) =>
 	arr.slice(0, index).concat(arr.slice(index + 1));
 

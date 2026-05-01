@@ -19,6 +19,7 @@ import NotEnoughPlayers from "./NotEnoughPlayers";
 import {
 	minutesToSeconds,
 	calcSubTimes,
+	calcRemainingSubTimes,
 	calcPlayerTimesFromSubs,
 	calcClockSeconds,
 	calculateSubsPlan,
@@ -44,9 +45,11 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	const [subs, setSubs] = useState(() => getConfig("subs"));
 	const [clock, setClock] = useState(() => getConfig("clock"));
 	const [clockTime, setClockTime] = useState(calcClockSeconds(clock));
-	const [subTimes, setSubTimes] = useState(
-		calcSubTimes(gameConfig, subsConfig, players),
-	);
+	const [subTimes, setSubTimes] = useState(() => {
+		const allSubTimes = calcSubTimes(gameConfig, subsConfig, players);
+		const savedSubs = getConfig("subs");
+		return calcRemainingSubTimes(allSubTimes, savedSubs, SUB_TIME_THRESHOLD);
+	});
 
 	const { periodLengthMinutes, numPlayersOn, numPeriods } = gameConfig;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);

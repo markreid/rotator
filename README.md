@@ -48,4 +48,3 @@ Pressing the padlock icon in the top left will lock the entire interface so no b
 	- Sub/clear button styling needs work
 	- Player list headers ("field" and "bench") also a bit off 
 
-
