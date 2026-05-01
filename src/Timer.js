@@ -6,12 +6,10 @@ import Sheet from "@mui/joy/Sheet";
 import Grid from "@mui/joy/Grid";
 import ButtonGroup from "@mui/joy/ButtonGroup";
 import IconButton from "@mui/joy/IconButton";
-import Divider from "@mui/joy/Divider";
 import Typography from "@mui/joy/Typography";
 
 import "./Timer.css";
 import { formatClock } from "./util";
-import { stopSound } from "./sound";
 
 const Timer = ({
 	clockTime,
@@ -37,7 +35,7 @@ const Timer = ({
 	}, []);
 
 	return (
-		<Sheet variant="soft" sx={{ p: 2, paddingBottom: 4 }}>
+		<Sheet variant="soft" sx={{ p: 2 }}>
 			<Card variant="outlined">
 				<Grid
 					container

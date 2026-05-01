@@ -277,7 +277,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 				/>	
 			) : (
 				<>
-					<Sheet variant="sxoft">
+					<Sheet variant="soft" className="GameButtons">
 						<Grid
 							container
 							spacing={2}
@@ -288,10 +288,10 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 						>
 							<Grid xs={6} sx={{ textAlign: 'center' }}>
 								{!on.length && !off.length ? (
-									<Button onClick={autoSub}>Auto Sub</Button>
+									<Button onClick={autoSub} sx={{ background: 'var(--c4)'}}>Auto Sub</Button>
 								) : (
 									<Button
-										color="success"
+										sx={{ background: 'var(--ondark)'}}
 										disabled={
 											!on.length ||
 											on.length !== off.length

@@ -5,7 +5,8 @@ import ProgressBar from './ProgressBar';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton from '@mui/joy/ListItemButton';
-import ListDivider from '@mui/joy/ListDivider';
+import ListSubheader from '@mui/joy/ListSubheader';
+import Typography from '@mui/joy/Typography';
 import { IoArrowForward, IoArrowBack, IoArrowForwardCircle, IoArrowBackCircle, IoHandRightOutline } from 'react-icons/io5';
 
 import { getDevMode } from './AppConfig';
@@ -30,10 +31,8 @@ const PlayerList = ({ players, variant, className, selected, select, timeOn, tar
 
 	return (
 		<div className={`PlayerList ${variant}`}>
-
 			<List>
-				<ListItem sx={{ fontWeight: 'bold', textTransform: 'capitalize', color: 'var(--c4)' }}>{className}</ListItem>
-				<ListDivider />
+				<ListSubheader>{className}</ListSubheader>
 				{players.slice().sort((a, b) => {
 				const inverseTimeKey = variant === 'on' ? 'off' : 'on';
 				const aStay = Math.round((timeOn[a][inverseTimeKey] / inverseTotalTime) * 100) >= 100;
