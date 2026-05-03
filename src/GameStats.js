@@ -6,6 +6,7 @@ import ListDivider from "@mui/joy/ListDivider";
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 
+import GameHistory from './GameHistory';
 import ProgressBar from "./ProgressBar";
 
 const GameStats = ({
@@ -37,6 +38,7 @@ const GameStats = ({
 	}, {});
 
 	return (
+		<>
 		<List>
 			{players.map((player, i) => (
 				<Box key={player}>
@@ -59,6 +61,8 @@ const GameStats = ({
 				</Box>
 			))}
 		</List>
+		{/*<GameHistory subs={subs} />*/}
+		</>
 	);
 };
 
