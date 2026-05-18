@@ -154,7 +154,7 @@ const PlayerConfig = () => {
 			</List>
 
 			<Card variant="plain">
-				{pluralise(players.length - inactivePlayers.length, "player")} active ({pluralise(players.length, "player")} total)
+				{pluralise(players.filter((p) => !inactivePlayers.includes(p)).length, "player")} active ({pluralise(players.length, "player")} total)
 				<Button
 					startDecorator={
 						<IoShuffle size="24" />
