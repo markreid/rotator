@@ -8,6 +8,7 @@ import Checkbox from "@mui/joy/Checkbox";
 import Stack from "@mui/joy/Stack";
 
 import ResetButton from "./ResetButton";
+import { VERSION } from "./version";
 
 export const getDevMode = () =>
 	JSON.parse(localStorage.getItem("rotator.devMode")) || false;
@@ -96,6 +97,11 @@ const AppConfig = ({ onDevModeChange }) => {
 					{!!workerWaiting && "Update now"}
 				</Button>
 			</Stack>
+			<Card variant="plain">
+				<Typography level="body-sm" sx={{ color: "neutral.500" }}>
+					Version: {VERSION}
+				</Typography>
+			</Card>
 		</Sheet>
 	);
 };
