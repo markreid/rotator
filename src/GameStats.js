@@ -9,6 +9,8 @@ import Box from "@mui/joy/Box";
 import GameHistory from './GameHistory';
 import ProgressBar from "./ProgressBar";
 
+import { calculateSpellCounts } from './util';
+
 const GameStats = ({
 	subs,
 	players,
@@ -20,22 +22,7 @@ const GameStats = ({
 	timeOnField,
 	timeOn,
 }) => {
-	const spellCounts = players.reduce((acc, player) => {
-		let onSpells = 0;
-		let offSpells = 0;
-		subs.forEach((sub, i) => {
-			const prev = subs[i - 1];
-			if (i === 0) {
-				if (sub.on.includes(player)) onSpells++;
-				if (sub.off.includes(player)) offSpells++;
-			} else {
-				if (sub.on.includes(player) && !prev.on.includes(player)) onSpells++;
-				if (sub.off.includes(player) && !prev.off.includes(player)) offSpells++;
-			}
-		});
-		acc[player] = { on: onSpells, off: offSpells };
-		return acc;
-	}, {});
+	const spellCounts = calculateSpellCounts(subs, players);
 
 	return (
 		<>

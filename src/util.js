@@ -139,8 +139,8 @@ export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
 	return map;
 };
 
-// calculate the "subs plan". 
-// how many changes will we make, how often do they happen, how much time 
+// calculate the "subs plan".
+// how many changes will we make, how often do they happen, how much time
 // do players spend on the field vs bench per sub and in total.
 export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 	const { numPlayersOn, periodLengthMinutes } = gameConfig;
@@ -179,3 +179,26 @@ export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 		benchSecondsEach,
 	};
 };
+
+
+// calculate player spell counts
+// todo - should this just be stored in state somewhere and incremented?
+export const calculateSpellCounts = (subs, players) =>
+	players.reduce((acc, player) => {
+		let onSpells = 0;
+		let offSpells = 0;
+		subs.forEach((sub, i) => {
+			const prev = subs[i - 1];
+			if (i === 0) {
+				if (sub.on.includes(player)) onSpells++;
+				if (sub.off.includes(player)) offSpells++;
+			} else {
+				if (sub.on.includes(player) && !prev.on.includes(player))
+					onSpells++;
+				if (sub.off.includes(player) && !prev.off.includes(player))
+					offSpells++;
+			}
+		});
+		acc[player] = { on: onSpells, off: offSpells };
+		return acc;
+	}, {});

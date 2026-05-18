@@ -336,6 +336,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									nextSubWarning: subsConfig.nextSubWarning,
 									playersPerSub,
 									clockTime,
+									subs,
 								}}
 							/>
 						</Grid>
@@ -355,6 +356,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									nextSubWarning: subsConfig.nextSubWarning,
 									playersPerSub,
 									clockTime,
+									subs,
 								}}
 							/>
 						</Grid>
