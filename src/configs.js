@@ -29,11 +29,16 @@ export const DEFAULTS = {
 	gameConfig: GAMECONFIG_DEFAULTS,
 };
 
-// if you make a sub within this many seconds of a
-// suggested sub time, we clear that sub time from
-// the list.
+// if you make a sub within this many seconds of a suggested
+// sub, we clear that sub from the list.
 export const SUB_TIME_THRESHOLD = 30;
-export const NEXT_SUB_WARNING = 30;
+
+// A player "should stay" if their remaining time in the inverse state
+// (e.g. bench time for a field player) is less than this fraction of a
+// sub interval. At 1.0, they stay once there's less than one full sub
+// interval remaining. Lower values (e.g. 0.5) would allow sending them
+// back if there's at least half a sub interval of time left.
+export const SHOULD_STAY_THRESHOLD = 0.75;
 
 export const getDefaults = (key) => {
 	if (!DEFAULTS[key]) throw new Error(`Unknown config key: ${key}`);

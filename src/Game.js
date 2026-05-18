@@ -8,7 +8,6 @@ import Accordion from "@mui/joy/Accordion";
 import AccordionSummary from "@mui/joy/AccordionSummary";
 import AccordionDetails from "@mui/joy/AccordionDetails";
 
-
 import "./Game.css";
 
 import Timer from "./Timer";
@@ -23,6 +22,7 @@ import {
 	calcPlayerTimesFromSubs,
 	calcClockSeconds,
 	calculateSubsPlan,
+	calculateShouldStay,
 } from "./util";
 
 import { playSound } from "./sound";
@@ -33,6 +33,7 @@ import {
 	resetConfig,
 	getActivePlayers,
 	SUB_TIME_THRESHOLD,
+	SHOULD_STAY_THRESHOLD,
 } from "./configs";
 
 import { getDevMode } from "./AppConfig";
@@ -48,7 +49,11 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	const [subTimes, setSubTimes] = useState(() => {
 		const allSubTimes = calcSubTimes(gameConfig, subsConfig, players);
 		const savedSubs = getConfig("subs");
-		return calcRemainingSubTimes(allSubTimes, savedSubs, SUB_TIME_THRESHOLD);
+		return calcRemainingSubTimes(
+			allSubTimes,
+			savedSubs,
+			SUB_TIME_THRESHOLD,
+		);
 	});
 
 	const { periodLengthMinutes, numPlayersOn, numPeriods } = gameConfig;
@@ -64,17 +69,20 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 			const newClockTime = calcClockSeconds(clock);
 			setClockTime(newClockTime);
 
-			// next sub coming up
-			if (subsConfig.nextSubWarning > 0 && subTimes.includes(newClockTime + subsConfig.nextSubWarning)) {
+			// next sub coming in nextSubWarning seconds
+			if (
+				subsConfig.nextSubWarning > 0 &&
+				subTimes.includes(newClockTime + subsConfig.nextSubWarning)
+			) {
 				playSound("nextSubSoon");
 			}
 
-			// next sub!
+			// next sub is now
 			if (subTimes.includes(newClockTime)) {
 				playSound("nextSubReady");
 			}
 
-			// period finshed
+			// period has finished
 			if (newClockTime >= periodLengthSeconds) {
 				stopClock();
 				playSound("periodFinished");
@@ -152,24 +160,32 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		benchSecondsEach,
 		timeOnBench,
 		timeOnField,
+		subEvery,
 	} = subsPlan;
 
+	const stayThreshold = subEvery * SHOULD_STAY_THRESHOLD;
+
 	const shouldStay = (player, variant) => {
-		const inverseKey = variant === 'on' ? 'off' : 'on';
-		const inverseTotalTime = variant === 'on' ? benchSecondsEach : playerSecondsEach;
-		return inverseTotalTime > 0 && Math.round((timeOn[player][inverseKey] / inverseTotalTime) * 100) >= 100;
+		const inverseVariant = variant === "on" ? "off" : "on";
+		const inverseTotalTime =
+			variant === "on" ? benchSecondsEach : playerSecondsEach;
+		return calculateShouldStay(
+			inverseTotalTime,
+			timeOn[player][inverseVariant],
+			stayThreshold,
+		);
 	};
 
 	// automatically select players for the next sub.
 	const autoSub = () => {
 		const sortedField = playersOnField
 			.slice()
-			.filter((p) => !shouldStay(p, 'on'))
+			.filter((p) => !shouldStay(p, "on"))
 			.sort((a, b) => timeOn[a].lastOn - timeOn[b].lastOn)
 			.slice(0, playersPerSub);
 		const sortedBench = playersOnBench
 			.slice()
-			.filter((p) => !shouldStay(p, 'off'))
+			.filter((p) => !shouldStay(p, "off"))
 			.sort((a, b) => timeOn[a].lastOff - timeOn[b].lastOff)
 			.slice(0, playersPerSub);
 		setOff(sortedField);
@@ -260,10 +276,8 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 					subRoute,
 					subTimes,
 				}}
-
 			/>
 
-			
 			{subRoute === "stats" ? (
 				<GameStats
 					{...{
@@ -277,7 +291,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 						timeOnField,
 						timeOn,
 					}}
-				/>	
+				/>
 			) : (
 				<>
 					<Sheet variant="soft" className="GameButtons">
@@ -289,12 +303,17 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 								justifyContent: "space-around",
 							}}
 						>
-							<Grid xs={6} sx={{ textAlign: 'center' }}>
+							<Grid xs={6} sx={{ textAlign: "center" }}>
 								{!on.length && !off.length ? (
-									<Button onClick={autoSub} sx={{ background: 'var(--c4)'}}>Auto Sub</Button>
+									<Button
+										onClick={autoSub}
+										sx={{ background: "var(--c4)" }}
+									>
+										Auto Sub
+									</Button>
 								) : (
 									<Button
-										sx={{ background: 'var(--ondark)'}}
+										sx={{ background: "var(--ondark)" }}
 										disabled={
 											!on.length ||
 											on.length !== off.length
@@ -305,8 +324,12 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									</Button>
 								)}
 							</Grid>
-							<Grid xs={6} sx={{ textAlign: 'center' }}>
-								<Button color="danger" disabled={!on.length && !off.length} onClick={resetOnOff}>
+							<Grid xs={6} sx={{ textAlign: "center" }}>
+								<Button
+									color="danger"
+									disabled={!on.length && !off.length}
+									onClick={resetOnOff}
+								>
 									Clear
 								</Button>
 							</Grid>
@@ -332,6 +355,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									targetTimeOn: timeOnField,
 									targetTotalTime: playerSecondsEach,
 									inverseTotalTime: benchSecondsEach,
+									stayThreshold,
 									subTimes,
 									nextSubWarning: subsConfig.nextSubWarning,
 									playersPerSub,
@@ -352,6 +376,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									targetTimeOn: timeOnBench,
 									targetTotalTime: benchSecondsEach,
 									inverseTotalTime: playerSecondsEach,
+									stayThreshold,
 									subTimes,
 									nextSubWarning: subsConfig.nextSubWarning,
 									playersPerSub,
@@ -365,27 +390,51 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 			)}
 
 			{devMode && (
-				<AccordionGroup sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000, background: '#fff', boxShadow: '0 -2px 8px rgba(0,0,0,0.15)', borderTop: '1px solid #ccc' }}>
+				<AccordionGroup
+					sx={{
+						position: "fixed",
+						bottom: 0,
+						left: 0,
+						right: 0,
+						zIndex: 1000,
+						background: "#fff",
+						boxShadow: "0 -2px 8px rgba(0,0,0,0.15)",
+						borderTop: "1px solid #ccc",
+					}}
+				>
 					<Accordion>
 						<AccordionSummary>Debug State</AccordionSummary>
 						<AccordionDetails>
-							<pre style={{ fontSize: '0.7em', padding: '8px', overflow: 'auto', maxHeight: '50vh', color: '#888', background: '#f5f5f5' }}>
-								{JSON.stringify({
-									clock,
-									clockTime,
-									players,
-									playersOnField,
-									playersOnBench,
-									on,
-									off,
-									subs,
-									subTimes,
-									subsPlan,
-									gameConfig,
-									subsConfig,
-									timeOn,
-									currentPeriod,
-								}, null, 2)}
+							<pre
+								style={{
+									fontSize: "0.7em",
+									padding: "8px",
+									overflow: "auto",
+									maxHeight: "50vh",
+									color: "#888",
+									background: "#f5f5f5",
+								}}
+							>
+								{JSON.stringify(
+									{
+										clock,
+										clockTime,
+										players,
+										playersOnField,
+										playersOnBench,
+										on,
+										off,
+										subs,
+										subTimes,
+										subsPlan,
+										gameConfig,
+										subsConfig,
+										timeOn,
+										currentPeriod,
+									},
+									null,
+									2,
+								)}
 							</pre>
 						</AccordionDetails>
 					</Accordion>

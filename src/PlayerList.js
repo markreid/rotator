@@ -6,7 +6,6 @@ import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton from "@mui/joy/ListItemButton";
 import ListSubheader from "@mui/joy/ListSubheader";
-import Typography from "@mui/joy/Typography";
 import {
 	IoArrowForward,
 	IoArrowBack,
@@ -16,8 +15,7 @@ import {
 } from "react-icons/io5";
 
 import { getDevMode } from "./AppConfig";
-
-import { calculateSpellCounts } from "./util";
+import { calculateShouldStay } from "./util";
 
 const PlayerList = ({
 	players,
@@ -29,6 +27,7 @@ const PlayerList = ({
 	targetTimeOn,
 	targetTotalTime,
 	inverseTotalTime,
+	stayThreshold,
 	subTimes,
 	nextSubWarning,
 	playersPerSub,
@@ -38,7 +37,6 @@ const PlayerList = ({
 	const devMode = getDevMode();
 
 	const timeOnReference = variant === "on" ? "lastOn" : "lastOff";
-
 	const nextSubTime = subTimes.find((t) => t >= clockTime);
 	const pastSubTime = subTimes.length > 0 && subTimes[0] < clockTime;
 	const withinWarning =
@@ -57,7 +55,7 @@ const PlayerList = ({
 				.slice(0, playersPerSub)
 		: [];
 
-	const spellCounts = calculateSpellCounts(subs, players);
+	const inverseVariant = variant === "on" ? "off" : "on";
 
 	return (
 		<div className={`PlayerList ${variant}`}>
@@ -66,47 +64,39 @@ const PlayerList = ({
 				{players
 					.slice()
 					.sort((a, b) => {
-						const inverseTimeKey = variant === "on" ? "off" : "on";
-						const aStay =
-							Math.round(
-								(timeOn[a][inverseTimeKey] / inverseTotalTime) *
-									100,
-							) >= 100;
-						const bStay =
-							Math.round(
-								(timeOn[b][inverseTimeKey] / inverseTotalTime) *
-									100,
-							) >= 100;
-						return aStay - bStay;
+						// put the players with shouldStay:true at the bottom.
+						const aShouldStay = calculateShouldStay(
+							inverseTotalTime,
+							timeOn[a][inverseVariant],
+							stayThreshold,
+						);
+						const bShouldStay = calculateShouldStay(
+							inverseTotalTime,
+							timeOn[b][inverseVariant],
+							stayThreshold,
+						);
+						return aShouldStay - bShouldStay;
 					})
 					.map((player) => {
 						const isSelected = selected.includes(player);
 
-						// calc % of time in this state for the current sub only
-						const percentageThisSub = Math.round(
+						// calc % of time in this state for the current spell only
+						const percentageThisSpell = Math.round(
 							((clockTime - timeOn[player][timeOnReference]) /
 								targetTimeOn) *
 								100,
 						);
-						const totalTimeKey = variant === "on" ? "on" : "off";
 
 						// calc % of time in this state for the total game
 						const percentageTotal = Math.round(
-							(timeOn[player][totalTimeKey] / targetTotalTime) *
-								100,
+							(timeOn[player][variant] / targetTotalTime) * 100,
 						);
 
-						// calc % of time in the inverse state for the total game
-						const inverseTimeKey = variant === "on" ? "off" : "on";
-						const percentageInverse = Math.round(
-							(timeOn[player][inverseTimeKey] /
-								inverseTotalTime) *
-								100,
+						const shouldStay = calculateShouldStay(
+							inverseTotalTime,
+							timeOn[player][inverseVariant],
+							stayThreshold,
 						);
-
-						// should this player stay where they are? ie, have they already done 100% of the time in the inverse state?
-						// const shouldStay = percentageInverse >= 100;
-						const shouldStay = spellCounts[player][variant];
 
 						return (
 							<ListItem
@@ -141,7 +131,7 @@ const PlayerList = ({
 									}}
 								>
 									<span style={{ flex: 1 }}>
-										{player} 
+										{player}
 										{devMode && (
 											<span
 												style={{
@@ -150,7 +140,7 @@ const PlayerList = ({
 													fontSize: "0.8em",
 												}}
 											>
-												{percentageThisSub}% -{" "}
+												{percentageThisSpell}% -{" "}
 												{percentageTotal}%
 											</span>
 										)}

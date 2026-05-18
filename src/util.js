@@ -180,9 +180,7 @@ export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 	};
 };
 
-
 // calculate player spell counts
-// todo - should this just be stored in state somewhere and incremented?
 export const calculateSpellCounts = (subs, players) =>
 	players.reduce((acc, player) => {
 		let onSpells = 0;
@@ -202,3 +200,16 @@ export const calculateSpellCounts = (subs, players) =>
 		acc[player] = { on: onSpells, off: offSpells };
 		return acc;
 	}, {});
+
+// a player should stay where they are if the time they have remaining
+// in the inverse state is less than the "stay threshold", which is the
+// length of a full spell * SHOULD_STAY_THRESHOLD.
+export const calculateShouldStay = (
+	inverseTotalTime,
+	timeOnInverse,
+	stayThreshold,
+) => {
+	const remainingInverse = inverseTotalTime - timeOnInverse;
+	const shouldStay = inverseTotalTime > 0 && remainingInverse < stayThreshold;
+	return shouldStay;
+};
