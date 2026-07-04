@@ -99,6 +99,16 @@ export const shuffle = (source) => {
 	return arr;
 };
 
+// reconcile a saved lineup against the current active roster.
+// players still active keep their field/bench slot (order preserved);
+// players no longer active are dropped; newly-active players are appended
+// to the end (i.e. onto the bench).
+export const reconcileLineup = (lineup, activeRoster) => {
+	const kept = lineup.filter((name) => activeRoster.includes(name));
+	const added = activeRoster.filter((name) => !lineup.includes(name));
+	return [...kept, ...added];
+};
+
 export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
 	// first map the player names
 	const map = players.reduce(

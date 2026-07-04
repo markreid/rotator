@@ -19,11 +19,13 @@ const GAMECONFIG_DEFAULTS = {
 const SUBS_DEFAULT = [];
 const PLAYERS_DEFAULT = [];
 const INACTIVE_PLAYERS_DEFAULT = [];
+const LINEUP_DEFAULT = [];
 
 export const DEFAULTS = {
 	subs: SUBS_DEFAULT,
 	players: PLAYERS_DEFAULT,
 	inactivePlayers: INACTIVE_PLAYERS_DEFAULT,
+	lineup: LINEUP_DEFAULT,
 	clock: CLOCK_DEFAULTS,
 	subsConfig: SUBSCONFIG_DEFAULTS,
 	gameConfig: GAMECONFIG_DEFAULTS,

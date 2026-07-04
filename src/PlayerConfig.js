@@ -54,6 +54,9 @@ const PlayerConfig = () => {
 		// add the player (if not already there) and reset the form
 		const newPlayers = Array.from(new Set(players.concat([trimmed])));
 		setPlayers(newPlayers);
+		// explicitly adding a name means it should be active, so clear any
+		// lingering inactive flag for it (guards against orphaned entries).
+		setInactivePlayers(inactivePlayers.filter((p) => p !== trimmed));
 		setNewPlayerName("");
 		setHasChanged(true);
 	};

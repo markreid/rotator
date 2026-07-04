@@ -23,6 +23,7 @@ import {
 	calcClockSeconds,
 	calculateSubsPlan,
 	calculateShouldStay,
+	reconcileLineup,
 } from "./util";
 
 import { playSound } from "./sound";
@@ -42,7 +43,18 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	// game state - might be more readable to use a reducer?
 	const gameConfig = useMemo(() => getConfig("gameConfig"), []);
 	const subsConfig = useMemo(() => getConfig("subsConfig"), []);
-	const [players, setPlayers] = useState(() => getActivePlayers());
+	// the lineup (field/bench ordering) lives in its own config key so the
+	// game never overwrites the roster. on mount we reconcile the saved
+	// lineup against the current active roster: this is what flows roster
+	// changes (late arrivals, players pulled out) into an in-progress game,
+	// since navigating back to this screen remounts the component.
+	const [players, setPlayers] = useState(() => {
+		const activeRoster = getActivePlayers();
+		const savedLineup = getConfig("lineup");
+		return savedLineup.length
+			? reconcileLineup(savedLineup, activeRoster)
+			: activeRoster;
+	});
 	const [subs, setSubs] = useState(() => getConfig("subs"));
 	const [clock, setClock] = useState(() => getConfig("clock"));
 	const [clockTime, setClockTime] = useState(calcClockSeconds(clock));
@@ -223,7 +235,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		);
 
 		setPlayers(subbedPlayers);
-		saveConfig("players", subbedPlayers);
+		saveConfig("lineup", subbedPlayers);
 
 		// if we're within the threshold, remove
 		// the first entry in subTimes
