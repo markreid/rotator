@@ -17,13 +17,15 @@ import NotEnoughPlayers from "./NotEnoughPlayers";
 
 import {
 	minutesToSeconds,
-	calcSubTimes,
-	calcRemainingSubTimes,
 	calcPlayerTimesFromSubs,
 	calcClockSeconds,
 	calculateSubsPlan,
 	calculateShouldStay,
 	reconcileLineup,
+	calcEffectivePool,
+	countSubEvents,
+	scheduleSignature,
+	calcForwardSchedule,
 } from "./util";
 
 import { playSound } from "./sound";
@@ -35,6 +37,7 @@ import {
 	getActivePlayers,
 	SUB_TIME_THRESHOLD,
 	SHOULD_STAY_THRESHOLD,
+	MIN_SPELL_FRACTION,
 } from "./configs";
 
 import { getDevMode } from "./AppConfig";
@@ -55,18 +58,15 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 			? reconcileLineup(savedLineup, activeRoster)
 			: activeRoster;
 	});
+	// players fixed in place (keeper, injured player). they hold their slot
+	// but leave the rotating pool — see the effective plan below.
+	const [fixed, setFixed] = useState(() => getConfig("fixedPlayers"));
 	const [subs, setSubs] = useState(() => getConfig("subs"));
 	const [clock, setClock] = useState(() => getConfig("clock"));
 	const [clockTime, setClockTime] = useState(calcClockSeconds(clock));
-	const [subTimes, setSubTimes] = useState(() => {
-		const allSubTimes = calcSubTimes(gameConfig, subsConfig, players);
-		const savedSubs = getConfig("subs");
-		return calcRemainingSubTimes(
-			allSubTimes,
-			savedSubs,
-			SUB_TIME_THRESHOLD,
-		);
-	});
+	// load the persisted forward schedule as-is; the re-plan effect below
+	// recomputes it if the pool changed while we were off this screen.
+	const [subTimes, setSubTimes] = useState(() => getConfig("schedule").times);
 
 	const { periodLengthMinutes, numPlayersOn, numPeriods } = gameConfig;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
@@ -149,7 +149,16 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		setClockTime(0);
 		resetSubs();
 		resetConfig("clock");
-		setSubTimes(calcSubTimes(gameConfig, subsConfig, players));
+		const times = calcForwardSchedule({
+			clockTime: 0,
+			periodLengthSeconds,
+			numChanges: subsPlan.numChanges,
+			naturalSubEvery: subsPlan.subEvery,
+			eventsMade: 0,
+			floorFraction: MIN_SPELL_FRACTION,
+		});
+		setSubTimes(times);
+		saveConfig("schedule", { times, signature: scheduleSignature(subsPlan) });
 	};
 
 	const playersOnField = players.slice(0, numPlayersOn);
@@ -162,10 +171,32 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		setOff([]);
 	};
 
-	const subsPlan = useMemo(
-		() => calculateSubsPlan(players.length, gameConfig, subsConfig),
-		[players.length, gameConfig, subsConfig],
-	);
+	// fix/unfix a player in place. re-planning is handled by the signature
+	// effect above (the pool changes -> the schedule recomputes).
+	const toggleFixed = (name) => {
+		const updated = fixed.includes(name)
+			? fixed.filter((p) => p !== name)
+			: fixed.concat([name]);
+		setFixed(updated);
+		saveConfig("fixedPlayers", updated);
+		// a fixed player can't be part of a pending sub
+		setOn((prev) => prev.filter((p) => p !== name));
+		setOff((prev) => prev.filter((p) => p !== name));
+	};
+
+	// the effective plan: fixed players hold their slot but drop out of the
+	// rotating pool, so all the sub maths runs against the reduced counts.
+	const subsPlan = useMemo(() => {
+		const { fixedOnField, fixedOnBench } = calcEffectivePool(
+			players,
+			fixed,
+			numPlayersOn,
+		);
+		return calculateSubsPlan(players.length, gameConfig, subsConfig, {
+			onField: fixedOnField,
+			onBench: fixedOnBench,
+		});
+	}, [players, fixed, numPlayersOn, gameConfig, subsConfig]);
 	const {
 		playersPerSub,
 		playerSecondsEach,
@@ -176,6 +207,25 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	} = subsPlan;
 
 	const stayThreshold = subEvery * SHOULD_STAY_THRESHOLD;
+
+	// re-plan the forward schedule whenever the rotating pool changes (a fix
+	// toggled, a player arriving/leaving, or settings changed) — but not on
+	// every navigation, so bells don't drift. the signature captures the pool.
+	const signature = scheduleSignature(subsPlan);
+	useEffect(() => {
+		if (getConfig("schedule").signature === signature) return;
+		const times = calcForwardSchedule({
+			clockTime: calcClockSeconds(clock),
+			periodLengthSeconds,
+			numChanges: subsPlan.numChanges,
+			naturalSubEvery: subsPlan.subEvery,
+			eventsMade: countSubEvents(subs),
+			floorFraction: MIN_SPELL_FRACTION,
+		});
+		setSubTimes(times);
+		saveConfig("schedule", { times, signature });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [signature]);
 
 	const shouldStay = (player, variant) => {
 		const inverseVariant = variant === "on" ? "off" : "on";
@@ -192,12 +242,12 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 	const autoSub = () => {
 		const sortedField = playersOnField
 			.slice()
-			.filter((p) => !shouldStay(p, "on"))
+			.filter((p) => !fixed.includes(p) && !shouldStay(p, "on"))
 			.sort((a, b) => timeOn[a].lastOn - timeOn[b].lastOn)
 			.slice(0, playersPerSub);
 		const sortedBench = playersOnBench
 			.slice()
-			.filter((p) => !shouldStay(p, "off"))
+			.filter((p) => !fixed.includes(p) && !shouldStay(p, "off"))
 			.sort((a, b) => timeOn[a].lastOff - timeOn[b].lastOff)
 			.slice(0, playersPerSub);
 		setOff(sortedField);
@@ -206,6 +256,8 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 
 	// add or remove a player from the on/off list
 	const select = (getter, setter) => (player) => {
+		// fixed players don't rotate, so they can't be selected for a sub
+		if (fixed.includes(player)) return;
 		// removing
 		if (getter.includes(player)) {
 			return setter(getter.filter((p) => p !== player));
@@ -237,10 +289,18 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 		setPlayers(subbedPlayers);
 		saveConfig("lineup", subbedPlayers);
 
-		// if we're within the threshold, remove
-		// the first entry in subTimes
-		if (subTimes[0] - clockTime <= SUB_TIME_THRESHOLD) {
-			setSubTimes(subTimes.slice(1));
+		// if we're within the threshold, consume the next scheduled bell.
+		// persist so navigating away doesn't bring the consumed bell back.
+		const consumed =
+			subTimes.length > 0 &&
+			subTimes[0] - clockTime <= SUB_TIME_THRESHOLD;
+		const newTimes = consumed ? subTimes.slice(1) : subTimes;
+		if (consumed) {
+			setSubTimes(newTimes);
+			saveConfig("schedule", {
+				times: newTimes,
+				signature: scheduleSignature(subsPlan),
+			});
 		}
 
 		// reset selected
@@ -302,6 +362,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 						timeOnBench,
 						timeOnField,
 						timeOn,
+						fixed,
 					}}
 				/>
 			) : (
@@ -373,6 +434,8 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									playersPerSub,
 									clockTime,
 									subs,
+									fixed,
+									toggleFixed,
 								}}
 							/>
 						</Grid>
@@ -394,6 +457,8 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 									playersPerSub,
 									clockTime,
 									subs,
+									fixed,
+									toggleFixed,
 								}}
 							/>
 						</Grid>
@@ -434,6 +499,7 @@ const Game = ({ subRoute, setSubRoute, navigateTo }) => {
 										players,
 										playersOnField,
 										playersOnBench,
+										fixed,
 										on,
 										off,
 										subs,

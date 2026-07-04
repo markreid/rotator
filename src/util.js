@@ -149,37 +149,89 @@ export const calcPlayerTimesFromSubs = (players, subs, clockTime) => {
 	return map;
 };
 
+// split the lineup at numPlayersOn and count how many fixed players sit on
+// each side. fixed players hold a slot but leave the rotating pool, so the
+// sub plan is computed against the "effective" (rotating) counts.
+export const calcEffectivePool = (players, fixed, numPlayersOn) => {
+	const fixedOnField = players
+		.slice(0, numPlayersOn)
+		.filter((p) => fixed.includes(p)).length;
+	const fixedOnBench = players
+		.slice(numPlayersOn)
+		.filter((p) => fixed.includes(p)).length;
+	return {
+		fixedOnField,
+		fixedOnBench,
+		effectiveNumPlayersOn: numPlayersOn - fixedOnField,
+		effectiveNumPlayers: players.length - fixedOnField - fixedOnBench,
+	};
+};
+
 // calculate the "subs plan".
 // how many changes will we make, how often do they happen, how much time
 // do players spend on the field vs bench per sub and in total.
-export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
+// fixedCounts removes fixed players from the rotating pool: everything is
+// computed against the effective (rotating) player/field counts.
+export const calculateSubsPlan = (
+	numPlayers,
+	gameConfig,
+	subsConfig,
+	fixedCounts = { onField: 0, onBench: 0 },
+) => {
 	const { numPlayersOn, periodLengthMinutes } = gameConfig;
 	const { playersPerSub, benchTurns } = subsConfig;
-
-	const numPlayersOff = numPlayers - numPlayersOn;
 	const periodLengthSeconds = minutesToSeconds(periodLengthMinutes);
 
-	const playerSecondsEach = (periodLengthSeconds * numPlayersOn) / numPlayers;
-	const benchSecondsEach = (periodLengthSeconds * numPlayersOff) / numPlayers;
+	const effectiveNumPlayersOn = numPlayersOn - fixedCounts.onField;
+	const effectiveNumPlayers =
+		numPlayers - fixedCounts.onField - fixedCounts.onBench;
+	const effectiveNumPlayersOff = effectiveNumPlayers - effectiveNumPlayersOn;
+
+	// no rotating players (all fixed) or no rotating field slots: nobody
+	// rotates, so return a degenerate plan with no changes and no divides by
+	// zero. the returned times/targets are inert since nobody consumes them.
+	if (effectiveNumPlayers <= 0 || effectiveNumPlayersOn <= 0) {
+		return {
+			numPlayers,
+			numPlayersOn,
+			numPlayersOff: numPlayers - numPlayersOn,
+			effectiveNumPlayers: Math.max(0, effectiveNumPlayers),
+			effectiveNumPlayersOn: Math.max(0, effectiveNumPlayersOn),
+			numChanges: 0,
+			subEvery: periodLengthSeconds,
+			timeOnField: periodLengthSeconds,
+			timeOnBench: 0,
+			playerSecondsEach: periodLengthSeconds,
+			playersPerSub,
+			benchSecondsEach: 0,
+		};
+	}
+
+	const playerSecondsEach =
+		(periodLengthSeconds * effectiveNumPlayersOn) / effectiveNumPlayers;
+	const benchSecondsEach =
+		(periodLengthSeconds * effectiveNumPlayersOff) / effectiveNumPlayers;
 
 	const numChanges = calcChanges(
-		numPlayersOn,
-		numPlayers,
+		effectiveNumPlayersOn,
+		effectiveNumPlayers,
 		playersPerSub,
 		benchTurns,
 	);
 	const subEvery = periodLengthSeconds / (numChanges + 1);
 
 	// how long a player spends on/off in total
-	const changesOnBench = Math.ceil(numPlayersOff / playersPerSub);
+	const changesOnBench = Math.ceil(effectiveNumPlayersOff / playersPerSub);
 	const timeOnBench = changesOnBench * subEvery;
-	const changesOnField = Math.ceil(numPlayersOn / playersPerSub);
+	const changesOnField = Math.ceil(effectiveNumPlayersOn / playersPerSub);
 	const timeOnField = changesOnField * subEvery;
 
 	return {
 		numPlayers,
 		numPlayersOn,
-		numPlayersOff,
+		numPlayersOff: numPlayers - numPlayersOn,
+		effectiveNumPlayers,
+		effectiveNumPlayersOn,
 		numChanges,
 		subEvery,
 		timeOnField,
@@ -188,6 +240,51 @@ export const calculateSubsPlan = (numPlayers, gameConfig, subsConfig) => {
 		playersPerSub,
 		benchSecondsEach,
 	};
+};
+
+// count sub events actually made (the initial lineup entry has numChanges 0).
+export const countSubEvents = (subs) =>
+	subs.filter((sub) => sub.numChanges > 0).length;
+
+// a stable string identifying the current pool/plan. the forward schedule is
+// only re-planned when this changes, so navigating away and back (same pool)
+// leaves the schedule untouched instead of re-anchoring the next bell.
+export const scheduleSignature = (plan) =>
+	[
+		plan.effectiveNumPlayersOn,
+		plan.effectiveNumPlayers,
+		plan.numChanges,
+		Math.round(plan.subEvery),
+	].join(":");
+
+// plan the remaining subs from the current moment to the end of the period.
+// spread the changes still needed evenly over the time left, but never let
+// the interval drop below floorFraction of the pool's natural interval. when
+// the floor binds (or the whistle arrives first), the freshest players simply
+// miss a spell rather than the whole team subbing frantically to catch up.
+// evaluated at t=0 with no subs made, this reduces to the normal even plan.
+export const calcForwardSchedule = ({
+	clockTime,
+	periodLengthSeconds,
+	numChanges,
+	naturalSubEvery,
+	eventsMade,
+	floorFraction,
+}) => {
+	const remainingChanges = Math.max(0, numChanges - eventsMade);
+	const remainingTime = periodLengthSeconds - clockTime;
+	if (remainingChanges === 0 || remainingTime <= 0) return [];
+
+	const equalized = remainingTime / (remainingChanges + 1);
+	const interval = Math.max(equalized, floorFraction * naturalSubEvery);
+
+	const times = [];
+	for (let k = 1; k <= remainingChanges; k++) {
+		const time = Math.round(clockTime + k * interval);
+		if (time >= periodLengthSeconds) break; // whistle: some players miss out
+		times.push(time);
+	}
+	return times;
 };
 
 // calculate player spell counts

@@ -20,12 +20,23 @@ const SUBS_DEFAULT = [];
 const PLAYERS_DEFAULT = [];
 const INACTIVE_PLAYERS_DEFAULT = [];
 const LINEUP_DEFAULT = [];
+// players "fixed" in place (e.g. a goalkeeper, or an injured player parked
+// on the bench). they hold their slot but are excluded from the rotating
+// pool: no auto-subs, no sub-time calculations.
+const FIXED_PLAYERS_DEFAULT = [];
+// the forward sub schedule. persisted (rather than re-derived each mount)
+// so navigating away and back doesn't re-anchor the next bell. `times` are
+// absolute clock seconds; `signature` identifies the pool/plan they were
+// computed for, so we only re-plan when the pool actually changes.
+const SCHEDULE_DEFAULT = { times: [], signature: null };
 
 export const DEFAULTS = {
 	subs: SUBS_DEFAULT,
 	players: PLAYERS_DEFAULT,
 	inactivePlayers: INACTIVE_PLAYERS_DEFAULT,
 	lineup: LINEUP_DEFAULT,
+	fixedPlayers: FIXED_PLAYERS_DEFAULT,
+	schedule: SCHEDULE_DEFAULT,
 	clock: CLOCK_DEFAULTS,
 	subsConfig: SUBSCONFIG_DEFAULTS,
 	gameConfig: GAMECONFIG_DEFAULTS,
@@ -41,6 +52,14 @@ export const SUB_TIME_THRESHOLD = 30;
 // interval remaining. Lower values (e.g. 0.5) would allow sending them
 // back if there's at least half a sub interval of time left.
 export const SHOULD_STAY_THRESHOLD = 0.75;
+
+// When the rotating pool changes mid-period we re-plan the remaining subs by
+// spreading them evenly over the time left. This is the floor on how short
+// that interval may get, as a fraction of the pool's natural sub interval.
+// Above it we allow a "slight squeeze" so everyone still rotates; below it we
+// clamp and let the freshest players miss a spell rather than sub frantically.
+// At ~0.7: a squeeze to 75% of natural is allowed, a scramble to 50% is not.
+export const MIN_SPELL_FRACTION = 0.7;
 
 export const getDefaults = (key) => {
 	if (!DEFAULTS[key]) throw new Error(`Unknown config key: ${key}`);

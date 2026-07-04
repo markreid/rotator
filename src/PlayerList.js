@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 import "./PlayerList.css";
 
 import ProgressBar from "./ProgressBar";
@@ -12,10 +14,15 @@ import {
 	IoArrowForwardCircle,
 	IoArrowBackCircle,
 	IoHandRightOutline,
+	IoLockClosed,
 } from "react-icons/io5";
 
 import { getDevMode } from "./AppConfig";
 import { calculateShouldStay } from "./util";
+
+// hold a player this long to fix/unfix them (pinning is rare, so there's no
+// always-visible control — see the long-press handlers below).
+const LONG_PRESS_MS = 2000;
 
 const PlayerList = ({
 	players,
@@ -33,8 +40,39 @@ const PlayerList = ({
 	playersPerSub,
 	clockTime,
 	subs,
+	fixed = [],
+	toggleFixed = () => {},
 }) => {
 	const devMode = getDevMode();
+
+	// long-press (hold ~2s) a player to fix/unfix them. a single timer is
+	// enough since only one row can be pressed at a time. we swallow the click
+	// that follows a fired long-press, and cancel if the finger moves (scroll).
+	const pressTimer = useRef(null);
+	const pressFired = useRef(false);
+	const pressStart = useRef({ x: 0, y: 0 });
+
+	const startPress = (player, e) => {
+		pressFired.current = false;
+		pressStart.current = { x: e.clientX, y: e.clientY };
+		pressTimer.current = setTimeout(() => {
+			pressFired.current = true;
+			toggleFixed(player);
+		}, LONG_PRESS_MS);
+	};
+	const movePress = (e) => {
+		const dx = Math.abs(e.clientX - pressStart.current.x);
+		const dy = Math.abs(e.clientY - pressStart.current.y);
+		if (dx > 10 || dy > 10) clearTimeout(pressTimer.current);
+	};
+	const endPress = () => clearTimeout(pressTimer.current);
+	const handleSelect = (player) => {
+		if (pressFired.current) {
+			pressFired.current = false; // consume the post-long-press click
+			return;
+		}
+		select(player);
+	};
 
 	const timeOnReference = variant === "on" ? "lastOn" : "lastOff";
 	const nextSubTime = subTimes.find((t) => t >= clockTime);
@@ -45,9 +83,11 @@ const PlayerList = ({
 			nextSubWarning > 0 &&
 			nextSubTime - clockTime <= nextSubWarning);
 
+	// fixed players never get suggested for a sub
 	const suggestedPlayers = withinWarning
 		? players
 				.slice()
+				.filter((p) => !fixed.includes(p))
 				.sort(
 					(a, b) =>
 						timeOn[a][timeOnReference] - timeOn[b][timeOnReference],
@@ -57,27 +97,33 @@ const PlayerList = ({
 
 	const inverseVariant = variant === "on" ? "off" : "on";
 
+	const sortedPlayers = players.slice().sort((a, b) => {
+		// fixed (parked) players sink to the bottom of the list.
+		const aFixed = fixed.includes(a) ? 1 : 0;
+		const bFixed = fixed.includes(b) ? 1 : 0;
+		if (aFixed !== bFixed) return aFixed - bFixed;
+		// then put the players with shouldStay:true at the bottom.
+		const aShouldStay = calculateShouldStay(
+			inverseTotalTime,
+			timeOn[a][inverseVariant],
+			stayThreshold,
+		);
+		const bShouldStay = calculateShouldStay(
+			inverseTotalTime,
+			timeOn[b][inverseVariant],
+			stayThreshold,
+		);
+		return aShouldStay - bShouldStay;
+	});
+	// the first fixed player marks the start of the "parked" group
+	const firstFixedIndex = sortedPlayers.findIndex((p) => fixed.includes(p));
+
 	return (
 		<div className={`PlayerList ${variant}`}>
 			<List>
 				<ListSubheader>{className}</ListSubheader>
-				{players
-					.slice()
-					.sort((a, b) => {
-						// put the players with shouldStay:true at the bottom.
-						const aShouldStay = calculateShouldStay(
-							inverseTotalTime,
-							timeOn[a][inverseVariant],
-							stayThreshold,
-						);
-						const bShouldStay = calculateShouldStay(
-							inverseTotalTime,
-							timeOn[b][inverseVariant],
-							stayThreshold,
-						);
-						return aShouldStay - bShouldStay;
-					})
-					.map((player) => {
+				{sortedPlayers.map((player, index) => {
+						const isFixed = fixed.includes(player);
 						const isSelected = selected.includes(player);
 
 						// calc % of time in this state for the current spell only
@@ -105,12 +151,25 @@ const PlayerList = ({
 									paddingRight: "1px",
 									paddingBlock: "4px",
 									borderBottom: "1px solid rgba(0,0,0,0.06)",
+									// separate the parked group from active players
+									...(index === firstFixedIndex && index > 0
+										? {
+												borderTop:
+													"3px solid rgba(0,0,0,0.25)",
+											}
+										: {}),
 								}}
 							>
 								<ListItemButton
 									selected={isSelected}
-									onClick={() => select(player)}
+									onClick={() => handleSelect(player)}
+									onPointerDown={(e) => startPress(player, e)}
+									onPointerMove={movePress}
+									onPointerUp={endPress}
+									onPointerLeave={endPress}
+									onContextMenu={(e) => e.preventDefault()}
 									sx={{
+										userSelect: "none",
 										"&&:hover": {
 											backgroundColor: isSelected
 												? variant === "on"
@@ -130,6 +189,16 @@ const PlayerList = ({
 											: {}),
 									}}
 								>
+									{isFixed && (
+										<IoLockClosed
+											color="var(--c4)"
+											size="1.1em"
+											style={{
+												marginRight: "6px",
+												flexShrink: 0,
+											}}
+										/>
+									)}
 									<span style={{ flex: 1 }}>
 										{player}
 										{devMode && (
@@ -145,7 +214,8 @@ const PlayerList = ({
 											</span>
 										)}
 									</span>
-									{shouldStay ? (
+									{/* fixed players show no sub indicator — they're parked */}
+									{isFixed ? null : shouldStay ? (
 										<IoHandRightOutline
 											color="var(--c4)"
 											size="1.2em"
@@ -177,14 +247,16 @@ const PlayerList = ({
 									) : null}
 								</ListItemButton>
 
-								<ProgressBar
-									variant={`${variant} slim`}
-									val={
-										clockTime -
-										timeOn[player][timeOnReference]
-									}
-									target={targetTimeOn}
-								/>
+								{!isFixed && (
+									<ProgressBar
+										variant={`${variant} slim`}
+										val={
+											clockTime -
+											timeOn[player][timeOnReference]
+										}
+										target={targetTimeOn}
+									/>
+								)}
 							</ListItem>
 						);
 					})}
