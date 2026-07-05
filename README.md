@@ -1,7 +1,8 @@
 # ROTATOR
 
-A simple web app for managing substitutions in sports that let have unlimited subs (ie, futsal.)
+A simple web app for managing player substitutions in sports that allow unlimited rotation (ie, futsal.) 
 
+Set up your game, players and sub rules and Rotator will automatically calculate a subs plan that ensures the team equally shares the time on the field and bench. If you need to make unexpected subs, it'll help you track who still needs to be subbed and when. 
 
 
 ## Usage
@@ -9,42 +10,34 @@ A simple web app for managing substitutions in sports that let have unlimited su
 
 ### Configuration 
 
-In the Players view, add all the players on your team. You can toggle players as active/inactive so any players who aren't available for a match can be temporarily hidden from the game view.
-
 In Game Setup, configure the number of periods, period length and how many players are on the field at once. 
 
-In Sub Setup, configure how many players you want to change at a time and how many turns a player should have on the bench during a period. You can also configure how long in advance the app will warn you about an upcoming sub by playing an alert tone (default is 30s.) The summary underneath explains what's going to happen in detail. 
+In the Players view, set up your roster of players. If players on the roster aren't available for a match you can set them as inactive to hide them from the Game view. 
+
+In Sub Setup, configure how many players to change at each sub and how many spells on the bench a player should have per period. You can also configure when the app will play an alert sound to let you know that a sub is coming up soon. 
 
 
 ### During the game
 
-Start the game clock to begin the game. The pause button is hidden during gameplay so you don't press it by mistake; click the unlock button to display it for five seconds. 
+Start the game clock to begin the game. The Next Sub clock shows the time until your next sub is due. 
 
-The Next Sub clock will show you how long until the next sub should be made. When the upcoming sub alert plays, an arrow icon will display next to the players who should be subbed next, based on how much time they've spend on the field or bench during the current spell. If you want to make the suggested sub, click the Auto Sub button to queue it up. Otherwise manually select the players by pressing on their names. 
+A sound plays when a sub is coming up soon, and an arrow icon displays next to the players who should be subbed according to the plan. To make the suggested sub, press the Auto Sub button to queue it up. To make a different sub, select the players by pressing their names. A second sound will play whne it's time for the sub; press the Make Sub button to make the change. 
 
-When you're ready to make the sub, press the Make Sub button. 
+Once a player's completed all of their subs, a hand icon will appear next to their name, indicating they need to stay where they are. These players will be moved to the bottom of the list; if you've 
+
+If you miss a sub, can't make a sub or have to make an unplanned sub, a circled arrow icon indicates that a player has exceeded their time in the current state and should be subbed when you get a chance. 
 
 
-Once a player has exceeded the total amount of time they should be spending on the field or bench for a period, a darker circular arrow icon will appear on their name, indicating that they should be subbed as soon as possible. 
+Note - once the game clock starts the pause button is hidden to prevent accidentally stopping the clock. Click the lock button to display it for five seconds. 
 
-If a player shouldn't be subbed because they've already exceeded their time on the field or bench, a hand icon will appear next to their name, indicating they should stay where they are. 
+
+#### Pinning players 
+
+Players can be "pinned" to the field or the bench if you don't want them to rotate (ie, goalkeeper, an injured player.) Long-press on the player's name to toggle; a padlock icon indicates a pinned player. 
+
+Pinning a player (or toggling inactive/active in the Players config) will recalculate the sub plan. If it happens early enough in the game, the existing subs will be kept with the timing adjusted to make up for the change. If it happens later on then the existing timing will be kept but some players may miss out on a sub. 
 
 
 #### Locking the UI
 
 Pressing the padlock icon in the top left will lock the entire interface so no buttons can be pressed - useful if you need to put your phone in your pocket during gameplay. You can then unlock the UI by pressing the button again.
-
-
-
-
-## Todo List
-
-### New features & improvements
-
-
-### Minor fixes & Tweaks
-- I think changing inactive/active players need to recalc sub config
-- Game component visual updates
-	- Sub/clear button styling needs work
-	- Player list headers ("field" and "bench") also a bit off 
-
